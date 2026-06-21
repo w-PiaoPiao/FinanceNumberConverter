@@ -1,0 +1,72 @@
+# XcodeGen 配置文件
+# 用法：xcodegen generate（在 FinanceNumberConverter/ 目录下执行）
+# 重新生成 .xcodeproj 不需要手动改 Xcode
+
+name: FinanceNumberConverter
+
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  FinanceNumberConverter:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/FinanceNumberConverter
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.FinanceNumberConverter
+        PRODUCT_NAME: FinanceNumberConverter
+        TARGETED_DEVICE_FAMILY: "1,2"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        DEVELOPMENT_ASSET_PATHS: Sources/FinanceNumberConverter/PreviewContent
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: YES
+        ENABLE_PREVIEWS: YES
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: "1.0"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_CFBundleDisplayName: 财务大写转换
+
+  FinanceNumberConverterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Sources/FinanceNumberConverterTests
+    dependencies:
+      - target: FinanceNumberConverter
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.FinanceNumberConverterTests
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  FinanceNumberConverter:
+    build:
+      targets:
+        FinanceNumberConverter: all
+        FinanceNumberConverterTests: [test]
+    test:
+      config: Debug
+      targets:
+        - FinanceNumberConverterTests
+    run:
+      config: Debug
+    archive:
+      config: Release

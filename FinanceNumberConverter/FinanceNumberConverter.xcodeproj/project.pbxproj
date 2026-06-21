@@ -1,0 +1,458 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E3E391FC310D297C35B6426 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05A4D513AE1C74F414AB958 /* ContentView.swift */; };
+		1A9ECF760C1F9653DB88AAA4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E69CE9E9A71825B05DFB669 /* Preview Assets.xcassets */; };
+		27E66E2F3E1F1B68ACCCAE4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DCBE96D46E9A9527BB5BB5E /* Assets.xcassets */; };
+		5D9873856EEC6F7CC492E7AD /* FinanceNumberConverterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEA5DD92CF13CD84AEC992 /* FinanceNumberConverterApp.swift */; };
+		EEAB27B9AC646FF60D70C0D5 /* FinanceNumberConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B95298B7632B5089151B0E /* FinanceNumberConverterTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FFFB87F676A65FC38469BF9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C64DB2CB037C37E93F23A830 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C787C25AA36AAB56633511B8;
+			remoteInfo = FinanceNumberConverter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2E69CE9E9A71825B05DFB669 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		51A7481FD03FA771B4B54974 /* FinanceNumberConverter.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FinanceNumberConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78BEA5DD92CF13CD84AEC992 /* FinanceNumberConverterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceNumberConverterApp.swift; sourceTree = "<group>"; };
+		9DCBE96D46E9A9527BB5BB5E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A05A4D513AE1C74F414AB958 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A5B95298B7632B5089151B0E /* FinanceNumberConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceNumberConverterTests.swift; sourceTree = "<group>"; };
+		C9FF650D091F94B8F109D854 /* FinanceNumberConverterTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FinanceNumberConverterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		05AB51EEB48CCD1F7C5D3370 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				579774EC2B9432A9BEE0DE07 /* FinanceNumberConverter */,
+				39A9728A1D887F9AE2F2F637 /* FinanceNumberConverterTests */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		39A9728A1D887F9AE2F2F637 /* FinanceNumberConverterTests */ = {
+			isa = PBXGroup;
+			children = (
+				A5B95298B7632B5089151B0E /* FinanceNumberConverterTests.swift */,
+			);
+			path = FinanceNumberConverterTests;
+			sourceTree = "<group>";
+		};
+		579774EC2B9432A9BEE0DE07 /* FinanceNumberConverter */ = {
+			isa = PBXGroup;
+			children = (
+				FB790100E9517D2564257CB8 /* PreviewContent */,
+				9DCBE96D46E9A9527BB5BB5E /* Assets.xcassets */,
+				A05A4D513AE1C74F414AB958 /* ContentView.swift */,
+				78BEA5DD92CF13CD84AEC992 /* FinanceNumberConverterApp.swift */,
+			);
+			path = FinanceNumberConverter;
+			sourceTree = "<group>";
+		};
+		75CD5C2D6A35B5C7305717D3 = {
+			isa = PBXGroup;
+			children = (
+				05AB51EEB48CCD1F7C5D3370 /* Sources */,
+				E3828F7AF83F9065C08095BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E3828F7AF83F9065C08095BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				51A7481FD03FA771B4B54974 /* FinanceNumberConverter.app */,
+				C9FF650D091F94B8F109D854 /* FinanceNumberConverterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FB790100E9517D2564257CB8 /* PreviewContent */ = {
+			isa = PBXGroup;
+			children = (
+				2E69CE9E9A71825B05DFB669 /* Preview Assets.xcassets */,
+			);
+			path = PreviewContent;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		79A955F300A94C0D24048C7F /* FinanceNumberConverterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B832BA59F0AA77CF8031F5BA /* Build configuration list for PBXNativeTarget "FinanceNumberConverterTests" */;
+			buildPhases = (
+				00C24C007EA075EF5B348AFD /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9178A8D9BCBA2A8B317FF8A4 /* PBXTargetDependency */,
+			);
+			name = FinanceNumberConverterTests;
+			packageProductDependencies = (
+			);
+			productName = FinanceNumberConverterTests;
+			productReference = C9FF650D091F94B8F109D854 /* FinanceNumberConverterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C787C25AA36AAB56633511B8 /* FinanceNumberConverter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E81A6305955635FED2E3486 /* Build configuration list for PBXNativeTarget "FinanceNumberConverter" */;
+			buildPhases = (
+				C4AD456F2AF4503FFD19C7D9 /* Sources */,
+				E864999AED9276A8000B67D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinanceNumberConverter;
+			packageProductDependencies = (
+			);
+			productName = FinanceNumberConverter;
+			productReference = 51A7481FD03FA771B4B54974 /* FinanceNumberConverter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C64DB2CB037C37E93F23A830 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					79A955F300A94C0D24048C7F = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					C787C25AA36AAB56633511B8 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 858E475175B7F3FC83854B05 /* Build configuration list for PBXProject "FinanceNumberConverter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 75CD5C2D6A35B5C7305717D3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E3828F7AF83F9065C08095BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C787C25AA36AAB56633511B8 /* FinanceNumberConverter */,
+				79A955F300A94C0D24048C7F /* FinanceNumberConverterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E864999AED9276A8000B67D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27E66E2F3E1F1B68ACCCAE4A /* Assets.xcassets in Resources */,
+				1A9ECF760C1F9653DB88AAA4 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00C24C007EA075EF5B348AFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EEAB27B9AC646FF60D70C0D5 /* FinanceNumberConverterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4AD456F2AF4503FFD19C7D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E3E391FC310D297C35B6426 /* ContentView.swift in Sources */,
+				5D9873856EEC6F7CC492E7AD /* FinanceNumberConverterApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9178A8D9BCBA2A8B317FF8A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C787C25AA36AAB56633511B8 /* FinanceNumberConverter */;
+			targetProxy = FFFB87F676A65FC38469BF9D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0ADCD576629E2EC3E90FEFE8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.FinanceNumberConverterTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FinanceNumberConverter.app/FinanceNumberConverter";
+			};
+			name = Debug;
+		};
+		19F005D03BFE09657CFA2D98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6AA33D1A93BC3BE2CB22777C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.FinanceNumberConverterTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FinanceNumberConverter.app/FinanceNumberConverter";
+			};
+			name = Release;
+		};
+		8CF3FC428217D0B85480CF97 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B038063B0B1188FA926E261A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = Sources/FinanceNumberConverter/PreviewContent;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "财务大写转换";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.FinanceNumberConverter;
+				PRODUCT_NAME = FinanceNumberConverter;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B336A3790E1DE197BC2EBCCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = Sources/FinanceNumberConverter/PreviewContent;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "财务大写转换";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.FinanceNumberConverter;
+				PRODUCT_NAME = FinanceNumberConverter;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4E81A6305955635FED2E3486 /* Build configuration list for PBXNativeTarget "FinanceNumberConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B336A3790E1DE197BC2EBCCB /* Debug */,
+				B038063B0B1188FA926E261A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		858E475175B7F3FC83854B05 /* Build configuration list for PBXProject "FinanceNumberConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CF3FC428217D0B85480CF97 /* Debug */,
+				19F005D03BFE09657CFA2D98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B832BA59F0AA77CF8031F5BA /* Build configuration list for PBXNativeTarget "FinanceNumberConverterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0ADCD576629E2EC3E90FEFE8 /* Debug */,
+				6AA33D1A93BC3BE2CB22777C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C64DB2CB037C37E93F23A830 /* Project object */;
+}
