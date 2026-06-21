@@ -90,9 +90,17 @@ struct ContentView: View {
             Text("财务大写转换")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(Color(.label))
-            Text("阿拉伯数字一键转中文大写")
-                .font(.system(size: 13))
-                .foregroundStyle(Color(.secondaryLabel))
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("金额大写转换")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.secondaryLabel))
+                Spacer()
+                Text("Designed by Piao · Powered by opencode")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Color(.tertiaryLabel))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 12)
