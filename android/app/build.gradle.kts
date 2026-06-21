@@ -8,14 +8,18 @@ plugins {
 
 android {
     namespace = "com.example.financenumberconverter"
-    compileSdk = 35
+    compileSdk = 35  // 编译 SDK 保持最新（使用最新 API）
 
     defaultConfig {
         applicationId = "com.example.financenumberconverter"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // 2026-06-21 修复 vivo 闪退：降到 targetSdk 34（Android 14）
+        // 原因：targetSdk 35（Android 15）强制了 edge-to-edge 和预测式 back gesture，
+        //       vivo OriginOS 与部分国产系统对此支持不完善，导致 App 启动后立即闪退。
+        //       targetSdk 34 已被所有国产系统验证稳定。
+        targetSdk = 34
+        versionCode = 2  // 升级 versionCode 让旧版能被覆盖
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
