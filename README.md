@@ -2,6 +2,14 @@
 
 > 阿拉伯数字 → 中文财务大写金额 · 跨平台（iOS + Android）
 
+![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue)
+![Swift](https://img.shields.io/badge/Swift-5.9-orange)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0-purple)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-iOS%2017+-blue)
+![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-green)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
+![Tests](https://img.shields.io/badge/tests-97%20passed-success)
+
 一个简洁的财务大写金额转换工具，源自日常填写发票/合同/收据时需要手写"壹贰叁"的痛点。
 
 ## ✨ 功能

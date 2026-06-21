@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: |
+  If you use this software in your research, please cite it using the
+  metadata from this file.
+type: software
+title: "FinanceNumberConverter"
+date-released: 2026-06-21
+version: 1.0.2
+license: MIT
+authors:
+  - family-names: "Piao"
+    given-names: "Piao"
+repository-code: "https://github.com/w-PiaoPiao/FinanceNumberConverter"
+keywords:
+  - ios
+  - android
+  - swift
+  - kotlin
+  - swiftui
+  - jetpack-compose
+  - chinese-numerals
+  - finance
+  - currency
+  - educational
+  - vibe-coding
+abstract: |
+  阿拉伯数字 → 中文财务大写金额转换工具，跨平台（iOS + Android）。
+  Convert Arabic numerals to Chinese financial uppercase amounts.
+  100% vibe-coded with opencode, zero third-party dependencies.
+license-url: "https://github.com/w-PiaoPiao/FinanceNumberConverter/blob/main/LICENSE"
