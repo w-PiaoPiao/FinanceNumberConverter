@@ -48,12 +48,12 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
                     inputSection
-                    actionButtons
-                    divider
+                    primaryActionButton
                     resultSectionOrHint
                     if !history.isEmpty {
                         historySection
                     }
+                    secondaryActionButtons
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -159,39 +159,30 @@ struct ContentView: View {
         }
     }
 
-    /// 主操作按钮：转换 + 试试看 + 清除
-    private var actionButtons: some View {
-        VStack(spacing: 12) {
-            // 主按钮：转换为大写（深色实心）
-            Button(action: performConvert) {
-                Text("转换为大写")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Color(.systemBackground))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color(.label))
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-            .disabled(input.isEmpty)
-
-            // 次要按钮：试试看 / 清除
-            HStack(spacing: 12) {
-                SecondaryButton(title: "试试看", action: loadSample)
-                SecondaryButton(
-                    title: "清除",
-                    action: { isShowingClearConfirm = true },
-                    disabled: input.isEmpty && result.isEmpty
-                )
-            }
+    /// 主操作按钮：转换为大写（深色实心）
+    private var primaryActionButton: some View {
+        Button(action: performConvert) {
+            Text("转换为大写")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(Color(.systemBackground))
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color(.label))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
+        .disabled(input.isEmpty)
     }
 
-    /// 分割线
-    private var divider: some View {
-        Rectangle()
-            .fill(Color(.separator))
-            .frame(height: 1)
-            .padding(.vertical, 4)
+    /// 次要操作按钮：试试看 / 清除（移到结果区下方）
+    private var secondaryActionButtons: some View {
+        HStack(spacing: 12) {
+            SecondaryButton(title: "试试看", action: loadSample)
+            SecondaryButton(
+                title: "清除",
+                action: { isShowingClearConfirm = true },
+                disabled: input.isEmpty && result.isEmpty
+            )
+        }
     }
 
     /// 结果区：有结果时显示大写，没结果时显示提示
