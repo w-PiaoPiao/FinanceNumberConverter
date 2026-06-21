@@ -21,16 +21,32 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    // Release 签名配置（密码从环境变量读取，不入 git）
+    // 用法：在 build 前 export 环境变量
+    //   export KEYSTORE_PASSWORD=changeit
+    //   export KEY_ALIAS=release
+    //   export KEY_PASSWORD=changeit
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore/release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "changeit"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "release"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "changeit"
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
         }
         release {
-            isMinifyEnabled = false  // 阶段 5 启用 R8
+            isMinifyEnabled = false  // 阶段 5 暂不启用 R8
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 使用 release 自签名（需 keystore 文件 + 环境变量）
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -55,16 +71,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    // 阶段 5 启用 release 签名（先用占位）
-    // signingConfigs {
-    //     create("release") {
-    //         storeFile = file("../keystore/release.keystore")
-    //         storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-    //         keyAlias = System.getenv("KEY_ALIAS") ?: ""
-    //         keyPassword = System.getenv("KEY_PASSWORD") ?: ""
-    //     }
-    // }
 
     packaging {
         resources {
