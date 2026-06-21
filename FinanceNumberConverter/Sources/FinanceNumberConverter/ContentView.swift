@@ -50,10 +50,10 @@ struct ContentView: View {
                     inputSection
                     primaryActionButton
                     resultSectionOrHint
+                    secondaryActionButtons
                     if !history.isEmpty {
                         historySection
                     }
-                    secondaryActionButtons
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
