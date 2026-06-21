@@ -13,13 +13,12 @@ android {
     defaultConfig {
         applicationId = "com.example.financenumberconverter"
         minSdk = 29
-        // 2026-06-21 修复 vivo 闪退：降到 targetSdk 34（Android 14）
-        // 原因：targetSdk 35（Android 15）强制了 edge-to-edge 和预测式 back gesture，
-        //       vivo OriginOS 与部分国产系统对此支持不完善，导致 App 启动后立即闪退。
-        //       targetSdk 34 已被所有国产系统验证稳定。
-        targetSdk = 34
-        versionCode = 2  // 升级 versionCode 让旧版能被覆盖
-        versionName = "1.0.1"
+        // 2026-06-21 修复 vivo 闪退：真正原因是 AndroidManifest 里
+        // <application android:name=".MainActivity"> 错误（MainActivity 是 Activity 不是 Application）
+        // 已修复。targetSdk 可以保持 35。
+        targetSdk = 35
+        versionCode = 3  // v1.0.2：修复真正的闪退原因
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
@@ -55,10 +54,8 @@ android {
     }
 
     lint {
-        // Lint 误报："MainActivity must extend Application"
-        // 实际是 ComponentActivity，lint 误判。禁用此条检查
-        disable += "Instantiatable"
-        // 测试期间 lint 不阻断 build
+        // Lint 检查保持开启（之前误禁用 Instantiatable 是错的，
+        // 那不是误报 — AndroidManifest 真的写错了，已修复）
         abortOnError = false
         checkReleaseBuilds = false
     }
