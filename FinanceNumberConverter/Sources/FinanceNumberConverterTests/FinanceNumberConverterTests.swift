@@ -189,17 +189,18 @@ final class FinanceNumberConverterTests: XCTestCase {
 
     func testSanitize_stripInvalidChars() {
         XCTAssertEqual(AmountInputValidator.sanitize("1a2b3c"), "123")
-        XCTAssertEqual(AmountInputValidator.sanitize("12.3.4.5"), "12.34")  // 多余小数点去掉 + 限 2 位小数
+        // 多个小数点只保留第一个，后续数字保留
+        XCTAssertEqual(AmountInputValidator.sanitize("12.3.4.5"), "12.345")
     }
 
     func testSanitize_stripNegativeSign() {
         XCTAssertEqual(AmountInputValidator.sanitize("-100"), "100")
     }
 
-    func testSanitize_truncateFraction() {
-        // 超过 2 位小数自动截断
-        XCTAssertEqual(AmountInputValidator.sanitize("1.234"), "1.23")
-        XCTAssertEqual(AmountInputValidator.sanitize("0.999"), "0.99")
+    func testSanitize_keepsAllFractionDigits() {
+        // 阶段 5 改进：sanitize 不截断小数位（让 UI 实时提示"只支持 2 位小数"）
+        XCTAssertEqual(AmountInputValidator.sanitize("1.234"), "1.234")
+        XCTAssertEqual(AmountInputValidator.sanitize("0.999"), "0.999")
     }
 
     func testSanitize_truncateInteger() {
@@ -258,5 +259,91 @@ final class FinanceNumberConverterTests: XCTestCase {
         XCTAssertNil(AmountInputValidator.error(for: "1."))
         XCTAssertNil(AmountInputValidator.error(for: "999999999999"))
         XCTAssertNil(AmountInputValidator.error(for: "999999999999.99"))
+    }
+
+    // MARK: - B 段 · AmountInputValidator.sanitize 不截断小数位
+
+    func testSanitize_keepsFractionDigits2() {
+        // 阶段 5 改进：sanitize 不再截断小数位，让 UI 显示完整输入
+        XCTAssertEqual(AmountInputValidator.sanitize("1.234"), "1.234")
+        XCTAssertEqual(AmountInputValidator.sanitize("0.999"), "0.999")
+    }
+
+    // MARK: - AmountInputValidator.fractionDigitCount
+
+    func testFractionDigitCount() {
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "1"), 0)
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "1.5"), 1)
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "1.55"), 2)
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "1.555"), 3)
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "100"), 0)
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: "1."), 0)  // 小数点后无字符
+        XCTAssertEqual(AmountInputValidator.fractionDigitCount(of: ".5"), 1)
+    }
+
+    // MARK: - HistoryStore
+
+    func testHistoryStore_addNew() {
+        let h: [HistoryItem] = []
+        let item = HistoryItem(input: "100", output: "壹佰元整")
+        let new = HistoryStore.add(item, to: h)
+        XCTAssertEqual(new.count, 1)
+        XCTAssertEqual(new[0].input, "100")
+    }
+
+    func testHistoryStore_addToFront() {
+        let old = [HistoryItem(input: "100", output: "壹佰元整")]
+        let new = HistoryStore.add(HistoryItem(input: "200", output: "贰佰元整"), to: old)
+        XCTAssertEqual(new.count, 2)
+        XCTAssertEqual(new[0].input, "200")  // 最新在最前
+        XCTAssertEqual(new[1].input, "100")
+    }
+
+    func testHistoryStore_deduplicate() {
+        let old = [
+            HistoryItem(input: "100", output: "壹佰元整"),
+            HistoryItem(input: "200", output: "贰佰元整")
+        ]
+        // 重复输入 100 → 应移到最前，不增加条数
+        let new = HistoryStore.add(HistoryItem(input: "100", output: "壹佰元整"), to: old)
+        XCTAssertEqual(new.count, 2)
+        XCTAssertEqual(new[0].input, "100")
+        XCTAssertEqual(new[1].input, "200")
+    }
+
+    func testHistoryStore_limitMaxItems() {
+        // 准备 10 条
+        var h: [HistoryItem] = []
+        for i in 1...10 {
+            h = HistoryStore.add(
+                HistoryItem(input: "\(i)", output: "金额\(i)"),
+                to: h
+            )
+        }
+        XCTAssertEqual(h.count, 10)
+
+        // 再加一条 → 应移除最旧的（第 10 条变成第 9 条前移）
+        let newer = HistoryStore.add(HistoryItem(input: "11", output: "金额11"), to: h)
+        XCTAssertEqual(newer.count, 10)
+        XCTAssertEqual(newer[0].input, "11")  // 最新
+        XCTAssertFalse(newer.contains { $0.input == "1" })  // 最旧的"1"被移除
+    }
+
+    func testHistoryStore_clear() {
+        let h = [HistoryItem(input: "1", output: "壹元整")]
+        XCTAssertEqual(HistoryStore.clear().count, 0)
+        XCTAssertTrue(HistoryStore.clear().isEmpty)
+    }
+
+    func testHistoryStore_formatTimestamp() {
+        // 用一个固定时间测试
+        var components = DateComponents()
+        components.year = 2026
+        components.month = 6
+        components.day = 21
+        components.hour = 14
+        components.minute = 30
+        let date = Calendar(identifier: .gregorian).date(from: components)!
+        XCTAssertEqual(HistoryStore.formatTimestamp(date), "14:30")
     }
 }

@@ -18,6 +18,9 @@ struct ContentView: View {
     @State private var errorMessage: String? = nil
     @State private var isCopied: Bool = false
     @State private var isShowingClearConfirm: Bool = false
+    @State private var isShowingHistoryClearConfirm: Bool = false
+    @State private var history: [HistoryItem] = []
+    @State private var copiedHistoryId: UUID? = nil  // 哪个历史项刚被复制
 
     @FocusState private var isInputFocused: Bool
 
@@ -26,6 +29,11 @@ struct ContentView: View {
     /// 实时校验：当前输入是否有错
     private var hasInputError: Bool {
         AmountInputValidator.error(for: input) != nil
+    }
+
+    /// 小数位数（用于动态提示）
+    private var fractionDigits: Int {
+        AmountInputValidator.fractionDigitCount(of: input)
     }
 
     // MARK: - Body
@@ -43,6 +51,9 @@ struct ContentView: View {
                     actionButtons
                     divider
                     resultSectionOrHint
+                    if !history.isEmpty {
+                        historySection
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -60,6 +71,14 @@ struct ContentView: View {
             Button("清除", role: .destructive, action: clearAll)
         } message: {
             Text("输入和结果都将被清空。")
+        }
+        .alert("清空历史记录？", isPresented: $isShowingHistoryClearConfirm) {
+            Button("取消", role: .cancel) {}
+            Button("清空", role: .destructive) {
+                history = HistoryStore.clear()
+            }
+        } message: {
+            Text("所有 \(history.count) 条历史记录都将被删除。")
         }
     }
 
@@ -115,20 +134,26 @@ struct ContentView: View {
                     Text(error)
                         .font(.system(size: 13))
                 } else if hasInputError {
-                    // 实时校验失败（如超过 12 位整数）
                     if let err = AmountInputValidator.error(for: input) {
                         Image(systemName: "exclamationmark.circle")
                             .font(.system(size: 12))
                         Text(err)
                             .font(.system(size: 13))
                     }
+                } else if fractionDigits > AmountInputValidator.maxFractionDigits {
+                    Image(systemName: "exclamationmark.circle")
+                        .font(.system(size: 12))
+                    Text("只支持 2 位小数")
+                        .font(.system(size: 13))
                 } else {
                     Text("支持小数，最多 2 位")
                         .font(.system(size: 12))
                 }
             }
             .foregroundStyle(
-                (errorMessage != nil || hasInputError) ? Color(.systemRed) : Color(.tertiaryLabel)
+                (errorMessage != nil || hasInputError || fractionDigits > AmountInputValidator.maxFractionDigits)
+                    ? Color(.systemRed)
+                    : Color(.tertiaryLabel)
             )
             .padding(.leading, 4)
         }
@@ -235,6 +260,39 @@ struct ContentView: View {
         .padding(.vertical, 48)
     }
 
+    /// 历史记录区
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // 标题 + 清空按钮
+            HStack {
+                Text("历史记录")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color(.label))
+                Spacer()
+                Text("最多 \(HistoryStore.maxItems) 条")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color(.tertiaryLabel))
+                Button("清空") {
+                    isShowingHistoryClearConfirm = true
+                }
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color(.systemRed))
+            }
+            .padding(.horizontal, 4)
+
+            // 列表
+            VStack(spacing: 8) {
+                ForEach(history) { item in
+                    HistoryRow(
+                        item: item,
+                        isJustCopied: copiedHistoryId == item.id,
+                        onCopy: { copyHistoryItem(item) }
+                    )
+                }
+            }
+        }
+    }
+
     // MARK: - 输入处理
 
     // 校验逻辑已抽离到 AmountInputValidator
@@ -257,9 +315,14 @@ struct ContentView: View {
             errorMessage = "数字格式错误"
             return
         }
-        result = NumberConverter.convert(amount)
+        let converted = NumberConverter.convert(amount)
+        result = converted
         errorMessage = nil
         isInputFocused = false  // 转换后收起键盘
+
+        // 写入历史（去重 + 限 10 条）
+        let item = HistoryItem(input: trimmed, output: converted)
+        history = HistoryStore.add(item, to: history)
     }
 
     /// 加载示例
@@ -285,6 +348,74 @@ struct ContentView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isCopied = false
         }
+    }
+
+    /// 复制历史项
+    private func copyHistoryItem(_ item: HistoryItem) {
+        UIPasteboard.general.string = item.output
+        copiedHistoryId = item.id
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if copiedHistoryId == item.id {
+                copiedHistoryId = nil
+            }
+        }
+    }
+}
+
+// MARK: - 历史记录行
+
+private struct HistoryRow: View {
+    let item: HistoryItem
+    let isJustCopied: Bool
+    let onCopy: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            // 左侧：输入 + 输出
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.input)
+                    .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    .foregroundStyle(Color(.tertiaryLabel))
+                Text(item.output)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color(.label))
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // 右侧：时间 + 复制按钮
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(HistoryStore.formatTimestamp(item.timestamp))
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(Color(.tertiaryLabel))
+                Button(action: onCopy) {
+                    HStack(spacing: 4) {
+                        Image(systemName: isJustCopied ? "checkmark" : "doc.on.doc")
+                            .font(.system(size: 12, weight: .medium))
+                        Text(isJustCopied ? "已复制" : "复制")
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                    .foregroundStyle(isJustCopied ? Color(.systemGreen) : Color(.label))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(
+                                isJustCopied ? Color(.systemGreen).opacity(0.4) : Color(.separator),
+                                lineWidth: 1
+                            )
+                    )
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color(.separator), lineWidth: 1)
+        )
     }
 }
 

@@ -21,7 +21,10 @@ enum AmountInputValidator {
 
     // MARK: - 清洗
 
-    /// 清洗输入：去除非法字符、限制小数点数量与位数
+    /// 清洗输入：去除非法字符、限制小数点数量
+    /// - 注意：小数位**不**截断，保留用户输入的全部小数位
+    ///   让 UI 能动态显示"只支持 2 位小数"提示
+    ///   真正的截断在 NumberConverter 内部（按金额规则处理）
     /// - Returns: 清洗后的字符串
     static func sanitize(_ raw: String) -> String {
         var s = raw
@@ -29,12 +32,12 @@ enum AmountInputValidator {
         s = s.replacingOccurrences(of: "-", with: "")
         // 2. 只保留数字和小数点
         s = String(s.filter { "0123456789.".contains($0) })
-        // 3. 限制小数点数量为 1
+        // 3. 限制小数点数量为 1（保留所有小数位）
         if let firstDot = s.firstIndex(of: ".") {
             let before = String(s[..<firstDot])
             let afterStart = s.index(after: firstDot)
             let after = String(s[afterStart...].filter { $0 != "." })
-            s = before + "." + String(after.prefix(maxFractionDigits))
+            s = before + "." + after
         }
         // 4. 限制整数位最多 maxIntegerDigits
         if let dot = s.firstIndex(of: ".") {
@@ -48,6 +51,13 @@ enum AmountInputValidator {
             }
         }
         return s
+    }
+
+    /// 获取小数位数（如 "1" → 0, "1.5" → 1, "1.55" → 2, "1.555" → 3）
+    static func fractionDigitCount(of value: String) -> Int {
+        guard let dot = value.firstIndex(of: ".") else { return 0 }
+        let afterStart = value.index(after: dot)
+        return value.distance(from: afterStart, to: value.endIndex)
     }
 
     // MARK: - 校验
