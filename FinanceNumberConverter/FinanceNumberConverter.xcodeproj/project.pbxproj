@@ -11,6 +11,7 @@
 		1A9ECF760C1F9653DB88AAA4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E69CE9E9A71825B05DFB669 /* Preview Assets.xcassets */; };
 		27E66E2F3E1F1B68ACCCAE4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DCBE96D46E9A9527BB5BB5E /* Assets.xcassets */; };
 		5D9873856EEC6F7CC492E7AD /* FinanceNumberConverterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BEA5DD92CF13CD84AEC992 /* FinanceNumberConverterApp.swift */; };
+		5F6ACEBC062CB89CA94456D5 /* AmountInputValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B28F8371C077845A5E66FC7 /* AmountInputValidator.swift */; };
 		8FC2A4CB3869BE4E53BEECA8 /* NumberConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482230FA681FAD9FABE1B7F9 /* NumberConverter.swift */; };
 		EEAB27B9AC646FF60D70C0D5 /* FinanceNumberConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B95298B7632B5089151B0E /* FinanceNumberConverterTests.swift */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2B28F8371C077845A5E66FC7 /* AmountInputValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputValidator.swift; sourceTree = "<group>"; };
 		2E69CE9E9A71825B05DFB669 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		482230FA681FAD9FABE1B7F9 /* NumberConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberConverter.swift; sourceTree = "<group>"; };
 		51A7481FD03FA771B4B54974 /* FinanceNumberConverter.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FinanceNumberConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				FB790100E9517D2564257CB8 /* PreviewContent */,
+				2B28F8371C077845A5E66FC7 /* AmountInputValidator.swift */,
 				9DCBE96D46E9A9527BB5BB5E /* Assets.xcassets */,
 				A05A4D513AE1C74F414AB958 /* ContentView.swift */,
 				78BEA5DD92CF13CD84AEC992 /* FinanceNumberConverterApp.swift */,
@@ -194,6 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F6ACEBC062CB89CA94456D5 /* AmountInputValidator.swift in Sources */,
 				0E3E391FC310D297C35B6426 /* ContentView.swift in Sources */,
 				5D9873856EEC6F7CC492E7AD /* FinanceNumberConverterApp.swift in Sources */,
 				8FC2A4CB3869BE4E53BEECA8 /* NumberConverter.swift in Sources */,

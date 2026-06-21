@@ -176,4 +176,87 @@ final class FinanceNumberConverterTests: XCTestCase {
         // 12 位整数（9999 亿）+ 2 位小数
         assertConvert("999999999999.99", "玖仟玖佰玖拾玖亿玖仟玖佰玖拾玖万玖仟玖佰玖拾玖元玖角玖分")
     }
+
+    // MARK: - B 段 · AmountInputValidator 校验
+
+    // B.1 sanitize: 清洗输入
+
+    func testSanitize_keepValid() {
+        XCTAssertEqual(AmountInputValidator.sanitize("1234.56"), "1234.56")
+        XCTAssertEqual(AmountInputValidator.sanitize("0"), "0")
+        XCTAssertEqual(AmountInputValidator.sanitize("100"), "100")
+    }
+
+    func testSanitize_stripInvalidChars() {
+        XCTAssertEqual(AmountInputValidator.sanitize("1a2b3c"), "123")
+        XCTAssertEqual(AmountInputValidator.sanitize("12.3.4.5"), "12.34")  // 多余小数点去掉 + 限 2 位小数
+    }
+
+    func testSanitize_stripNegativeSign() {
+        XCTAssertEqual(AmountInputValidator.sanitize("-100"), "100")
+    }
+
+    func testSanitize_truncateFraction() {
+        // 超过 2 位小数自动截断
+        XCTAssertEqual(AmountInputValidator.sanitize("1.234"), "1.23")
+        XCTAssertEqual(AmountInputValidator.sanitize("0.999"), "0.99")
+    }
+
+    func testSanitize_truncateInteger() {
+        // 超过 12 位整数自动截断
+        let long = String(repeating: "9", count: 20)
+        XCTAssertEqual(
+            AmountInputValidator.sanitize(long),
+            String(repeating: "9", count: 12)
+        )
+    }
+
+    func testSanitize_allowDotOnly() {
+        XCTAssertEqual(AmountInputValidator.sanitize("."), ".")
+        XCTAssertEqual(AmountInputValidator.sanitize(".5"), ".5")
+    }
+
+    // B.2 error: 计算错误信息
+
+    func testError_emptyReturnsNil() {
+        XCTAssertNil(AmountInputValidator.error(for: ""))
+        XCTAssertNil(AmountInputValidator.error(for: "   "))
+    }
+
+    func testError_multipleDots() {
+        XCTAssertEqual(
+            AmountInputValidator.error(for: "1.05.6"),
+            "数字格式错误：只能有一个小数点"
+        )
+    }
+
+    func testError_negative() {
+        XCTAssertEqual(
+            AmountInputValidator.error(for: "-100"),
+            "不支持负数"
+        )
+    }
+
+    func testError_tooLarge() {
+        XCTAssertEqual(
+            AmountInputValidator.error(for: "10000000000000"),
+            "金额过大（最多 12 位整数）"
+        )
+    }
+
+    func testError_invalidChars() {
+        XCTAssertEqual(
+            AmountInputValidator.error(for: "abc"),
+            "仅支持数字和小数点"
+        )
+    }
+
+    func testError_validReturnsNil() {
+        XCTAssertNil(AmountInputValidator.error(for: "0"))
+        XCTAssertNil(AmountInputValidator.error(for: "1234.56"))
+        XCTAssertNil(AmountInputValidator.error(for: ".5"))
+        XCTAssertNil(AmountInputValidator.error(for: "1."))
+        XCTAssertNil(AmountInputValidator.error(for: "999999999999"))
+        XCTAssertNil(AmountInputValidator.error(for: "999999999999.99"))
+    }
 }
