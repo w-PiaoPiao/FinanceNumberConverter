@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# IDE
+.idea/
+*.iml
+.kotlin/
+
+# Android
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keystore（敏感信息，不入 git）
+keystore/*.keystore
+keystore/*.jks
+keystore/*.p12
+keystore/*.key
+
+# 日志
+*.log

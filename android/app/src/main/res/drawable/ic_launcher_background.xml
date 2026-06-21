@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  暖白底（与 iOS AppIcon 背景一致 #F2F0EB）
+  adaptive icon 系统会自动应用遮罩（圆/方/圆角方）
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 暖白底色填充整个 108x108 区域 -->
+    <path
+        android:fillColor="#F2F0EB"
+        android:pathData="M0,0h108v108h-108z" />
+
+</vector>

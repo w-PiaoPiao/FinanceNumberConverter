@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 基础主题：透明 + Material 3，由 Compose 接管 -->
+    <style name="Theme.FinanceNumberConverter" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor" tools:targetApi="l">@color/background_warm_white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:navigationBarColor">@color/background_warm_white</item>
+        <item name="android:windowBackground">@color/background_warm_white</item>
+    </style>
+</resources>

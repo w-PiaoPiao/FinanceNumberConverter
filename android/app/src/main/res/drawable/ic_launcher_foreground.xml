@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  前景：黑色"壹"字
+  viewport 108x108，中心 72x72 是安全区（重要内容放这里）
+  "壹"字位置：中心 70x70
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!--
+      简化版"壹"字（用基本几何形状拼接，避免中文字体依赖）
+      中心点 (54, 54)，"壹"字高度 64
+    -->
+    <group
+        android:translateX="22"
+        android:translateY="22">
+
+        <!-- 顶部横（一） -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M0,4 L60,4 L60,12 L0,12 Z" />
+
+        <!-- 中间横 -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M6,18 L54,18 L54,26 L6,26 Z" />
+
+        <!-- 下方口（左竖） -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M0,32 L8,32 L8,60 L0,60 Z" />
+
+        <!-- 下方口（右竖） -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M52,32 L60,32 L60,60 L52,60 Z" />
+
+        <!-- 下方口（上横） -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M0,40 L60,40 L60,48 L0,48 Z" />
+
+        <!-- 下方口（中间横） -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M8,46 L52,46 L52,54 L8,54 Z" />
+
+        <!-- 底部一横 -->
+        <path
+            android:fillColor="#1A1A1A"
+            android:pathData="M0,62 L60,62 L60,70 L0,70 Z" />
+
+    </group>
+
+</vector>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 暖白主题（与 iOS 03-设计规范.md 一致） -->
+    <color name="background_warm_white">#F2F2F7</color>
+    <color name="surface_white">#FFFFFF</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#8E8E93</color>
+    <color name="text_tertiary">#C7C7CC</color>
+    <color name="divider">#C6C6C8</color>
+    <color name="error_red">#FF3B30</color>
+    <color name="success_green">#34C759</color>
+
+    <!-- App Icon 暖白底 + 黑色壹字 -->
+    <color name="icon_background">#F2F0EB</color>
+    <color name="icon_foreground">#1A1A1A</color>
+</resources>
