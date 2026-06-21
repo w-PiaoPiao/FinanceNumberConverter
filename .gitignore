@@ -54,3 +54,7 @@ Package.resolved
 # 日志和临时
 *.log
 *.tmp
+
+# opencode 工具生成
+skills-lock.json
+.opencode/
