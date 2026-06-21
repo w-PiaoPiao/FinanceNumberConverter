@@ -23,6 +23,11 @@ struct ContentView: View {
 
     private let sampleNumber = "1234.56"
 
+    /// 实时校验：当前输入是否有错
+    private var hasInputError: Bool {
+        AmountInputValidator.error(for: input) != nil
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -43,8 +48,6 @@ struct ContentView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 32)
             }
-
-            // 自动聚焦输入框
         }
         .onAppear {
             // 短暂延迟确保视图已上屏
@@ -76,7 +79,7 @@ struct ContentView: View {
         .padding(.top, 12)
     }
 
-    /// 输入框 + 错误提示
+    /// 输入框 + 错误/帮助提示
     private var inputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             TextField("请输入金额", text: $input)
@@ -90,30 +93,44 @@ struct ContentView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .strokeBorder(
-                            errorMessage == nil ? Color(.separator) : Color(.systemRed).opacity(0.5),
+                            hasInputError ? Color(.systemRed).opacity(0.5) : Color(.separator),
                             lineWidth: 1
                         )
                 )
                 .onChange(of: input) { _, newValue in
-                    liveValidate(newValue)
+                    // 实时清洗：去除非法字符、限制位数
+                    // 注意：不在 onChange 中设置 errorMessage，避免与 performConvert 冲突
+                    let sanitized = AmountInputValidator.sanitize(newValue)
+                    if sanitized != newValue {
+                        input = sanitized
+                    }
                 }
+                .onSubmit { performConvert() }
 
-            // 错误提示 / 实时格式化提示
-            if let error = errorMessage {
-                HStack(spacing: 4) {
+            // 错误或帮助提示
+            HStack(spacing: 4) {
+                if let error = errorMessage {
                     Image(systemName: "exclamationmark.circle")
                         .font(.system(size: 12))
                     Text(error)
                         .font(.system(size: 13))
+                } else if hasInputError {
+                    // 实时校验失败（如超过 12 位整数）
+                    if let err = AmountInputValidator.error(for: input) {
+                        Image(systemName: "exclamationmark.circle")
+                            .font(.system(size: 12))
+                        Text(err)
+                            .font(.system(size: 13))
+                    }
+                } else {
+                    Text("支持小数，最多 2 位")
+                        .font(.system(size: 12))
                 }
-                .foregroundStyle(Color(.systemRed))
-                .padding(.leading, 4)
-            } else if !input.isEmpty {
-                Text("支持小数，最多 2 位")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color(.tertiaryLabel))
-                    .padding(.leading, 4)
             }
+            .foregroundStyle(
+                (errorMessage != nil || hasInputError) ? Color(.systemRed) : Color(.tertiaryLabel)
+            )
+            .padding(.leading, 4)
         }
     }
 
@@ -130,11 +147,16 @@ struct ContentView: View {
                     .background(Color(.label))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .disabled(input.isEmpty)
 
             // 次要按钮：试试看 / 清除
             HStack(spacing: 12) {
                 SecondaryButton(title: "试试看", action: loadSample)
-                SecondaryButton(title: "清除", action: { isShowingClearConfirm = true })
+                SecondaryButton(
+                    title: "清除",
+                    action: { isShowingClearConfirm = true },
+                    disabled: input.isEmpty && result.isEmpty
+                )
             }
         }
     }
@@ -196,7 +218,6 @@ struct ContentView: View {
                         )
                 )
             }
-            .disabled(result.isEmpty)
         }
     }
 
@@ -214,66 +235,31 @@ struct ContentView: View {
         .padding(.vertical, 48)
     }
 
+    // MARK: - 输入处理
+
+    // 校验逻辑已抽离到 AmountInputValidator
+
     // MARK: - Actions
-
-    /// 实时校验（输入变化时调用）
-    private func liveValidate(_ value: String) {
-        if value.isEmpty {
-            errorMessage = nil
-            return
-        }
-        if !isValidAmountString(value) {
-            errorMessage = nil  // 实时输入时不打断（用户可能在删字）
-            return
-        }
-        guard let dec = Decimal(string: value) else {
-            errorMessage = nil
-            return
-        }
-        if dec < 0 {
-            errorMessage = "不支持负数"
-        } else if dec > Decimal(string: "999999999999")! {
-            errorMessage = "金额过大（最多 12 位整数）"
-        } else {
-            errorMessage = nil
-        }
-    }
-
-    /// 字符串是否只含数字和最多一个小数点
-    private func isValidAmountString(_ s: String) -> Bool {
-        var dotSeen = false
-        for ch in s {
-            if ch == "." {
-                if dotSeen { return false }
-                dotSeen = true
-            } else if !ch.isNumber {
-                return false
-            }
-        }
-        return true
-    }
 
     /// 执行转换
     private func performConvert() {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
+        // 优先用 AmountInputValidator.error，保证 UI 提示一致
+        if let err = AmountInputValidator.error(for: trimmed) {
+            errorMessage = err
+            return
+        }
         guard !trimmed.isEmpty else {
             errorMessage = "请输入金额"
             return
         }
-        guard isValidAmountString(trimmed), let amount = Decimal(string: trimmed) else {
+        guard let amount = Decimal(string: trimmed) else {
             errorMessage = "数字格式错误"
-            return
-        }
-        if amount < 0 {
-            errorMessage = "不支持负数"
-            return
-        }
-        if amount > Decimal(string: "999999999999")! {
-            errorMessage = "金额过大（最多 12 位整数）"
             return
         }
         result = NumberConverter.convert(amount)
         errorMessage = nil
+        isInputFocused = false  // 转换后收起键盘
     }
 
     /// 加载示例
@@ -307,20 +293,25 @@ struct ContentView: View {
 private struct SecondaryButton: View {
     let title: String
     let action: () -> Void
+    var disabled: Bool = false
 
     var body: some View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(Color(.label))
+                .foregroundStyle(disabled ? Color(.tertiaryLabel) : Color(.label))
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
                 .background(Color.clear)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Color(.separator), lineWidth: 1)
+                        .strokeBorder(
+                            disabled ? Color(.separator).opacity(0.5) : Color(.separator),
+                            lineWidth: 1
+                        )
                 )
         }
+        .disabled(disabled)
     }
 }
 
