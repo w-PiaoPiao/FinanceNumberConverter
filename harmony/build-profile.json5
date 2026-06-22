@@ -1,10 +1,23 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "release.p12",
+          "keyAlias": "fnc",
+          "keyAliasPassword": "${FNC_KEY_ALIAS_PASSWORD}",
+          "storePassword": "${FNC_KEYSTORE_PASSWORD}",
+          "profile": "release.p7b",
+          "signAlg": "SHA256withECDSA"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "release",
         "compatibleSdkVersion": "5.0.0(12)",
         "targetSdkVersion": "5.0.0(12)",
         "runtimeOS": "HarmonyOS",

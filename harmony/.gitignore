@@ -26,9 +26,14 @@ coverage/
 # 签名证书（敏感）
 *.p12
 *.p7b
+*.cer
+*.csr
 *.keystore
 *.jks
 cert/
+
+# DevEco Studio 生成的中间文件
+material/
 
 # 日志
 *.log
