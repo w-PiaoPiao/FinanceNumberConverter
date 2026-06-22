@@ -1,0 +1,116 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "财务大写转换 App"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "财务大写转换"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "财务大写转换"
+    },
+    {
+      "name": "entry_title",
+      "value": "财务大写转换"
+    },
+    {
+      "name": "entry_subtitle",
+      "value": "金额大写转换"
+    },
+    {
+      "name": "entry_credit",
+      "value": "Designed by Piao · Powered by opencode"
+    },
+    {
+      "name": "input_placeholder",
+      "value": "请输入金额"
+    },
+    {
+      "name": "input_help_normal",
+      "value": "支持小数，最多 2 位"
+    },
+    {
+      "name": "input_help_fraction",
+      "value": "只支持 2 位小数"
+    },
+    {
+      "name": "input_error_empty",
+      "value": "请输入金额"
+    },
+    {
+      "name": "input_error_too_large",
+      "value": "金额过大（最多 12 位整数）"
+    },
+    {
+      "name": "input_error_negative",
+      "value": "不支持负数"
+    },
+    {
+      "name": "input_error_invalid",
+      "value": "仅支持数字和小数点"
+    },
+    {
+      "name": "button_convert",
+      "value": "转换为大写"
+    },
+    {
+      "name": "button_sample",
+      "value": "试试看"
+    },
+    {
+      "name": "button_clear",
+      "value": "清除"
+    },
+    {
+      "name": "button_copy",
+      "value": "一键复制"
+    },
+    {
+      "name": "button_copied",
+      "value": "已复制"
+    },
+    {
+      "name": "result_empty_hint",
+      "value": "输入金额后点击「转换为大写」"
+    },
+    {
+      "name": "history_title",
+      "value": "历史记录"
+    },
+    {
+      "name": "history_max",
+      "value": "最多 10 条"
+    },
+    {
+      "name": "history_clear",
+      "value": "清空"
+    },
+    {
+      "name": "history_clear_confirm_title",
+      "value": "清空历史记录？"
+    },
+    {
+      "name": "history_clear_confirm_message",
+      "value": "所有 %d 条历史记录都将被删除。"
+    },
+    {
+      "name": "clear_confirm_title",
+      "value": "清除全部内容？"
+    },
+    {
+      "name": "clear_confirm_message",
+      "value": "输入和结果都将被清空。"
+    },
+    {
+      "name": "clear_confirm_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "clear_confirm_ok",
+      "value": "清除"
+    }
+  ]
+}

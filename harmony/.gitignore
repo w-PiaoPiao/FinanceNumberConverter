@@ -1,0 +1,34 @@
+# IDE
+.idea/
+*.iml
+
+# Hvigor
+.hvigor/
+node_modules/
+*.lock
+package-lock.json
+
+# Build
+build/
+entry/build/
+oh_modules/
+
+# Local
+local.properties
+hvigorfile.ts.bak
+
+# OS
+.DS_Store
+
+# 测试报告
+coverage/
+
+# 签名证书（敏感）
+*.p12
+*.p7b
+*.keystore
+*.jks
+cert/
+
+# 日志
+*.log

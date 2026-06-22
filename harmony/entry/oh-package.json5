@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "财务大写转换 App 入口模块",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {}
+}
