@@ -22,9 +22,11 @@ export default function amountInputValidatorTest() {
       expect(AmountInputValidator.sanitize('-100')).assertEqual('100');
     });
 
-    it('should_keep_all_fraction_digits', 0, () => {
-      expect(AmountInputValidator.sanitize('1.234')).assertEqual('1.234');
-      expect(AmountInputValidator.sanitize('0.999')).assertEqual('0.999');
+    it('should_truncate_fraction_to_2', 0, () => {
+      expect(AmountInputValidator.sanitize('1.234')).assertEqual('1.23');
+      expect(AmountInputValidator.sanitize('0.999')).assertEqual('0.99');
+      expect(AmountInputValidator.sanitize('1.2')).assertEqual('1.2');
+      expect(AmountInputValidator.sanitize('1.')).assertEqual('1.');
     });
 
     it('should_truncate_integer', 0, () => {

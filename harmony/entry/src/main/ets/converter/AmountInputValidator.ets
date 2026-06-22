@@ -10,8 +10,7 @@ export class AmountInputValidator {
   static readonly MAX_FRACTION_DIGITS: number = 2;
 
   /**
-   * 清洗输入：去除非法字符、限制小数点数量
-   * 注意：小数位**不**截断，保留用户输入的全部小数位
+   * 清洗输入：去除非法字符、限制小数点数量、截断小数到 2 位
    */
   static sanitize(raw: string): string {
     let s: string = raw;
@@ -37,6 +36,11 @@ export class AmountInputValidator {
       if (s.length > AmountInputValidator.MAX_INTEGER_DIGITS) {
         s = s.substring(0, AmountInputValidator.MAX_INTEGER_DIGITS);
       }
+    }
+    // 5. 限制小数位最多 MAX_FRACTION_DIGITS
+    const dotIdx2: number = s.indexOf('.');
+    if (dotIdx2 >= 0 && s.length - dotIdx2 - 1 > AmountInputValidator.MAX_FRACTION_DIGITS) {
+      s = s.substring(0, dotIdx2 + AmountInputValidator.MAX_FRACTION_DIGITS + 1);
     }
     return s;
   }

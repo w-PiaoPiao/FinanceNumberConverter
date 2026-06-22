@@ -44,14 +44,11 @@ struct Index {
   private sampleNumber: string = '1234.56';
 
   aboutToAppear() {
-    // 启动时聚焦输入框
-    setTimeout(() => {
-      focusControl.requestFocus('inputField');
-    }, 100);
+    // 启动时聚焦由 .defaultFocus(true) 处理
   }
 
   // 帮助文字
-  private get helpText(): string {
+  private helpText(): string {
     if (this.errorMessage.length > 0) {
       return this.errorMessage;
     }
@@ -65,7 +62,7 @@ struct Index {
     return '支持小数，最多 2 位';
   }
 
-  private get helpIsError(): boolean {
+  private helpIsError(): boolean {
     if (this.errorMessage.length > 0) {
       return true;
     }
@@ -164,27 +161,35 @@ struct Index {
   @Builder
   InputSection() {
     Column() {
-      TextInput({ placeholder: '请输入金额', text: this.input })
+      TextInput({ placeholder: '请输入金额', text: $$this.input })
         .id('inputField')
-        .type(InputType.Decimal)
+        .type(InputType.Normal)
+        .defaultFocus(true)
         .fontSize(24)
         .fontColor(TEXT_PRIMARY)
         .placeholderColor(TEXT_TERTIARY)
         .backgroundColor(SURFACE_COLOR)
         .borderRadius(10)
         .borderWidth(1)
-        .borderColor(this.helpIsError ? ERROR_COLOR : DIVIDER_COLOR)
+        .borderColor(this.helpIsError() ? ERROR_COLOR : DIVIDER_COLOR)
         .padding({ left: 16, right: 16, top: 16, bottom: 16 })
         .width('100%')
         .onChange((value: string) => {
-          this.input = AmountInputValidator.sanitize(value);
+          const sanitized: string = AmountInputValidator.sanitize(value);
+          if (this.input !== sanitized) {
+            this.input = sanitized;
+          }
         })
 
-      Text(this.helpText)
-        .fontSize(this.helpIsError ? 13 : 12)
-        .fontColor(this.helpIsError ? ERROR_COLOR : TEXT_TERTIARY)
-        .margin({ top: 8, left: 4 })
+      Text(this.helpText())
+        .fontSize(14)
+        .fontColor(this.helpIsError() ? ERROR_COLOR : '#3C3C43')
+        .fontWeight(this.helpIsError() ? FontWeight.Medium : FontWeight.Regular)
+        .backgroundColor(this.helpIsError() ? '#FFEEEE' : '#F0F0F5')
+        .borderRadius(4)
+        .padding({ top: 6, bottom: 6, left: 8, right: 8 })
         .width('100%')
+        .constraintSize({ minHeight: 28 })
     }
     .width('100%')
     .alignItems(HorizontalAlign.Start)
@@ -446,50 +451,45 @@ struct Index {
 
   @Builder
   AlertDialogView(title: string, message: string, confirmText: string, onConfirm: () => void) {
-    Stack() {
+    Stack({ alignContent: Alignment.Center }) {
       Column()
         .width('100%')
         .height('100%')
         .backgroundColor('#00000080')
-        Column() {
-          Text(title)
-            .fontSize(17)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(TEXT_PRIMARY)
-            .margin({ bottom: 8 })
-          Text(message)
-            .fontSize(13)
+      Column() {
+        Text(title)
+          .fontSize(17)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(TEXT_PRIMARY)
+          .margin({ bottom: 8 })
+        Text(message)
+          .fontSize(13)
+          .fontColor(TEXT_SECONDARY)
+          .margin({ bottom: 16 })
+        Row() {
+          Text('取消')
+            .fontSize(15)
             .fontColor(TEXT_SECONDARY)
-            .margin({ bottom: 16 })
-          Row() {
-            Text('取消')
-              .fontSize(15)
-              .fontColor(TEXT_SECONDARY)
-              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-              .onClick(() => {
-                this.showClearConfirm = false;
-                this.showHistoryClearConfirm = false;
-              })
-            Text(confirmText)
-              .fontSize(15)
-              .fontColor(ERROR_COLOR)
-              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-              .onClick(() => {
-                onConfirm();
-              })
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.End)
+            .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+            .onClick(() => {
+              this.showClearConfirm = false;
+              this.showHistoryClearConfirm = false;
+            })
+          Text(confirmText)
+            .fontSize(15)
+            .fontColor(ERROR_COLOR)
+            .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+            .onClick(() => {
+              onConfirm();
+            })
         }
-        .width('80%')
-        .padding(20)
-        .backgroundColor(SURFACE_COLOR)
-        .borderRadius(14)
+        .width('100%')
+        .justifyContent(FlexAlign.End)
       }
-      .width('100%')
-      .height('100%')
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
+      .width('80%')
+      .padding(20)
+      .backgroundColor(SURFACE_COLOR)
+      .borderRadius(14)
     }
     .width('100%')
     .height('100%')

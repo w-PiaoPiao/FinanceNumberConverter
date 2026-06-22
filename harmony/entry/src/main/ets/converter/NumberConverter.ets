@@ -27,7 +27,9 @@ export class NumberConverter {
     }
     // 截断到 2 位小数（避免浮点精度问题）
     const truncated: number = Math.round(amount * 100) / 100;
-    const [intStr, decStr] = NumberConverter.splitAmount(truncated);
+    const split: [string, string] = NumberConverter.splitAmount(truncated);
+    const intStr: string = split[0];
+    const decStr: string = split[1];
 
     const intChinese: string = NumberConverter.convertIntegerPart(intStr);
     const decChinese: string = NumberConverter.convertDecimalPart(decStr);
