@@ -4,7 +4,7 @@
 > 最后更新：2026-06-21
 
 ## 项目工作目录
-- **项目根目录**：`/Users/yizhiwang/Desktop/opencode/第一个ios项目`
+- **项目根目录**：`/Users/yizhiwang/Desktop/opencode/FinanceNumberConverter`
 - 项目名：财务大写转换 App（阿拉伯数字 → 中文大写金额）
 - **三端**：
   - iOS 项目子目录：`./FinanceNumberConverter/`

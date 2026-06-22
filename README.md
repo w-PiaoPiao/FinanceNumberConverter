@@ -44,7 +44,7 @@
 ## 📁 项目结构
 
 ```
-第一个ios项目/
+FinanceNumberConverter/
 ├── docs/                          # 共享项目文档
 ├── dev-logs/                      # 共享开发日志
 ├── FinanceNumberConverter/        # iOS Xcode 工程

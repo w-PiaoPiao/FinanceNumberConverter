@@ -58,3 +58,7 @@ Package.resolved
 # opencode 工具生成
 skills-lock.json
 .opencode/
+
+# 临时调试目录（截图、问题排查等）
+修复/
+修复*/

@@ -68,7 +68,7 @@ def main() -> None:
     draw.text((sub_x, sub_y), sub_text, fill=SUB_COLOR, font=sub_font)
 
     # === 保存 ===
-    out_path = "/Users/yizhiwang/Desktop/opencode/第一个ios项目/FinanceNumberConverter/Sources/FinanceNumberConverter/Assets.xcassets/AppIcon.appiconset/icon-1024.png"
+    out_path = "/Users/yizhiwang/Desktop/opencode/FinanceNumberConverter/FinanceNumberConverter/Sources/FinanceNumberConverter/Assets.xcassets/AppIcon.appiconset/icon-1024.png"
     img.save(out_path, "PNG", optimize=True)
     print(f"✅ 已生成 App Icon: {out_path}")
     print(f"   尺寸: {SIZE}x{SIZE}, '壹'字高: {main_h}px, 副标题高: {sub_h}px")
