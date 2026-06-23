@@ -5,12 +5,13 @@
         "name": "release",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "release.p12",
+          "storeFile": "release.p12",
+          "storePassword": "000000316886917FC3FE16B180D8DB4309DDE7734D0AE6A8B7993611820733636AE2FC60F8A0BB319D27B7E0FB9A1C3FBBDDDB55E9559DF97669D1DD9C0957F08C",
           "keyAlias": "fnc",
-          "keyAliasPassword": "${FNC_KEY_ALIAS_PASSWORD}",
-          "storePassword": "${FNC_KEYSTORE_PASSWORD}",
+          "keyPassword": "0000003196BE174CB90086C338D5E6A7812AB59863D883AC47773F21415BD2D3B6AF72AB903EDF5EBF18074DDD8FE1A76B468896953E431A60547054F470A52C04",
+          "signAlg": "SHA256withECDSA",
           "profile": "release.p7b",
-          "signAlg": "SHA256withECDSA"
+          "certpath": "/Users/yizhiwang/Desktop/opencode/FinanceNumberConverter/harmony/fnc_release_v2.cer"
         }
       }
     ],

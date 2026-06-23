@@ -29,6 +29,17 @@ echo "=== 鸿蒙 Release HAP 编译脚本 ==="
 echo ""
 
 # 1. 检查环境变量
+# 如果当前 shell 没加载（bash 脚本不会自动 source .zshrc），尝试加载
+if [[ -z "${FNC_KEYSTORE_PASSWORD:-}" ]]; then
+  for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile"; do
+    if [[ -f "$rc" ]] && grep -q "FNC_KEYSTORE_PASSWORD" "$rc" 2>/dev/null; then
+      # shellcheck disable=SC1090
+      source "$rc" 2>/dev/null || true
+      break
+    fi
+  done
+fi
+
 if [[ -z "${FNC_KEYSTORE_PASSWORD:-}" ]]; then
   err "环境变量 FNC_KEYSTORE_PASSWORD 未设置"
   err "请在 ~/.zshrc 加："
@@ -44,6 +55,36 @@ if [[ -z "${FNC_KEY_ALIAS_PASSWORD:-}" ]]; then
   exit 1
 fi
 ok "环境变量已加载（密码不在日志中明文显示）"
+
+# 设置 DevEco Studio SDK 路径（命令行 build 需要）
+if [[ -z "${DEVECO_SDK_HOME:-}" ]]; then
+  for candidate in \
+    "/Applications/DevEco-Studio.app/Contents/sdk" \
+    "$HOME/Library/Huawei/Sdk"; do
+    if [[ -d "$candidate" ]]; then
+      export DEVECO_SDK_HOME="$candidate"
+      ok "设置 DEVECO_SDK_HOME=$candidate"
+      break
+    fi
+  done
+fi
+
+# 设置 JAVA_HOME（签名工具需要 JBR，DevEco Studio 自带）
+if [[ -z "${JAVA_HOME:-}" ]] || [[ ! -x "${JAVA_HOME}/bin/java" ]]; then
+  for candidate in \
+    "/Applications/DevEco-Studio.app/Contents/jbr/Contents/Home" \
+    "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home" \
+    "/opt/homebrew/opt/openjdk@17"; do
+    if [[ -x "$candidate/bin/java" ]]; then
+      export JAVA_HOME="$candidate"
+      # 关键：把 java 加到 PATH 最前面，否则 hvigor 内部签名工具找不到
+      export PATH="$JAVA_HOME/bin:$PATH"
+      ok "设置 JAVA_HOME=$candidate"
+      ok "PATH 已更新，java 优先用：$(which java)"
+      break
+    fi
+  done
+fi
 
 # 2. 检查签名文件
 for f in release.p12 release.p7b; do
@@ -85,6 +126,8 @@ fi
 echo ""
 echo "=== 开始编译 Release HAP ==="
 cd "$HARMONY_DIR"
+# 先停掉旧的 daemon（daemon 会缓存环境变量）
+$HVIGORW --stop-daemon 2>/dev/null || true
 $HVIGORW clean --mode module -p product=default assembleHap --analyze=normal --parallel --incremental --daemon
 
 # ============== 验证产物 ==============
@@ -103,19 +146,23 @@ ok "大小：$HAP_SIZE"
 # ============== 验证签名 ==============
 echo ""
 echo "=== 验证签名 ==="
-TMP_DIR=$(mktemp -d)
-unzip -q "$HAP_PATH" -d "$TMP_DIR"
-if [[ -d "$TMP_DIR/META-INF" ]]; then
-  SIGN_FILES=$(ls "$TMP_DIR/META-INF/" | grep -E "\.(SF|RSA|DSA|EC)$" | wc -l | tr -d ' ')
-  if [[ "$SIGN_FILES" -ge 2 ]]; then
-    ok "签名验证通过（META-INF 有 $SIGN_FILES 个签名文件）"
-  else
-    warn "未发现预期签名文件（可能是 debug 签名？$SIGN_FILES 个）"
+# V2 签名工具不写 META-INF，而是嵌入在 .pages.info 或 module.json
+# 通过 build log 中的 "sign app success" 判断
+BUILD_LOG="$HARMONY_DIR/.hvigor/outputs/build-logs/build.log"
+if [[ -f "$BUILD_LOG" ]] && grep -q "sign app success" "$BUILD_LOG"; then
+  ok "签名验证通过（build log 含 'sign app success'）"
+  # 也检查文件大小合理性
+  if [[ -f "$HAP_PATH" ]]; then
+    TMP_DIR=$(mktemp -d)
+    unzip -q "$HAP_PATH" -d "$TMP_DIR"
+    if [[ -f "$TMP_DIR/.pages.info" ]]; then
+      ok "V2 签名标志文件存在：.pages.info"
+    fi
+    rm -rf "$TMP_DIR"
   fi
 else
-  warn "未发现 META-INF 目录，HAP 未签名！"
+  warn "未发现 sign app success 标记，请检查 build log"
 fi
-rm -rf "$TMP_DIR"
 
 # ============== 收尾 ==============
 echo ""
