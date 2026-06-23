@@ -146,6 +146,7 @@ export KEYSTORE_PASSWORD=changeit
 ## 🔐 隐私
 
 - 完整隐私政策：[`docs/privacy-policy.md`](./docs/privacy-policy.md)
+- 在线版本（AGC 上架用）：[https://w-piaopiao.github.io/FinanceNumberConverter/privacy-policy.html](https://w-piaopiao.github.io/FinanceNumberConverter/privacy-policy.html)
 - 三端统一：iOS / Android / HarmonyOS 共用同一份政策
 - 核心承诺：**不收集任何用户数据**，**不联网**，**不集成第三方 SDK**
 
