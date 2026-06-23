@@ -83,7 +83,7 @@
 
 如对本政策有任何疑问、意见或建议，请通过以下方式联系：
 
-- **邮箱**：w_PiaoPiao2026@163.com（请替换为你的真实邮箱）
+- **邮箱**：w_PiaoPiao2026@163.com
 - **GitHub**：https://github.com/w-PiaoPiao/FinanceNumberConverter/issues
 - **项目主页**：https://github.com/w-PiaoPiao/FinanceNumberConverter
 
