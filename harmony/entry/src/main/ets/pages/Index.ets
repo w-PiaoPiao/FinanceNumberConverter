@@ -19,14 +19,6 @@ import { HistoryStore } from '../converter/HistoryStore';
 import { HistoryItem } from '../model/HistoryItem';
 import { ClipboardUtil } from '../utils/Clipboard';
 
-const BG_COLOR: string = '#F2F2F7';
-const SURFACE_COLOR: string = '#FFFFFF';
-const TEXT_PRIMARY: string = '#000000';
-const TEXT_SECONDARY: string = '#8E8E93';
-const TEXT_TERTIARY: string = '#C7C7CC';
-const DIVIDER_COLOR: string = '#C6C6C8';
-const ERROR_COLOR: string = '#FF3B30';
-const SUCCESS_COLOR: string = '#34C759';
 
 @Entry
 @Component
@@ -138,15 +130,15 @@ struct Index {
       Text('财务大写转换')
         .fontSize(28)
         .fontWeight(FontWeight.Bold)
-        .fontColor(TEXT_PRIMARY)
+        .fontColor($r('app.color.font_primary'))
       Row() {
         Text('金额大写转换')
           .fontSize(13)
-          .fontColor(TEXT_SECONDARY)
+          .fontColor($r('app.color.font_secondary'))
         Blank()
         Text('Designed by Piao · Powered by opencode')
           .fontSize(10)
-          .fontColor(TEXT_TERTIARY)
+          .fontColor($r('app.color.font_tertiary'))
           .maxLines(1)
       }
       .width('100%')
@@ -166,12 +158,12 @@ struct Index {
         .type(InputType.Normal)
         .defaultFocus(true)
         .fontSize(24)
-        .fontColor(TEXT_PRIMARY)
-        .placeholderColor(TEXT_TERTIARY)
-        .backgroundColor(SURFACE_COLOR)
+        .fontColor($r('app.color.font_primary'))
+        .placeholderColor($r('app.color.font_tertiary'))
+        .backgroundColor($r('app.color.surface'))
         .borderRadius(10)
         .borderWidth(1)
-        .borderColor(this.helpIsError() ? ERROR_COLOR : DIVIDER_COLOR)
+        .borderColor(this.helpIsError() ? $r('app.color.error') : $r('app.color.divider'))
         .padding({ left: 16, right: 16, top: 16, bottom: 16 })
         .width('100%')
         .onChange((value: string) => {
@@ -183,9 +175,9 @@ struct Index {
 
       Text(this.helpText())
         .fontSize(14)
-        .fontColor(this.helpIsError() ? ERROR_COLOR : '#3C3C43')
+        .fontColor(this.helpIsError() ? $r('app.color.error') : $r('app.color.font_primary'))
         .fontWeight(this.helpIsError() ? FontWeight.Medium : FontWeight.Regular)
-        .backgroundColor(this.helpIsError() ? '#FFEEEE' : '#F0F0F5')
+        .backgroundColor(this.helpIsError() ? $r('app.color.help_error_bg') : $r('app.color.help_bg'))
         .borderRadius(4)
         .padding({ top: 6, bottom: 6, left: 8, right: 8 })
         .width('100%')
@@ -201,8 +193,8 @@ struct Index {
     Button('转换为大写')
       .fontSize(17)
       .fontWeight(FontWeight.Medium)
-      .fontColor(SURFACE_COLOR)
-      .backgroundColor(this.input.length > 0 ? TEXT_PRIMARY : TEXT_TERTIARY)
+      .fontColor($r('app.color.surface'))
+      .backgroundColor(this.input.length > 0 ? $r('app.color.font_primary') : $r('app.color.font_tertiary'))
       .borderRadius(10)
       .width('100%')
       .height(50)
@@ -220,29 +212,29 @@ struct Index {
       Text(this.result)
         .fontSize(28)
         .fontWeight(FontWeight.Medium)
-        .fontColor(TEXT_PRIMARY)
+        .fontColor($r('app.color.font_primary'))
         .textAlign(TextAlign.Center)
         .lineHeight(32)
         .padding(20)
         .width('100%')
-        .backgroundColor(SURFACE_COLOR)
+        .backgroundColor($r('app.color.surface'))
         .borderRadius(10)
         .borderWidth(1)
-        .borderColor(DIVIDER_COLOR)
+        .borderColor($r('app.color.divider'))
 
       // 复制按钮
       Row() {
         Text(this.isCopied ? '已复制' : '一键复制')
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor(this.isCopied ? SUCCESS_COLOR : TEXT_PRIMARY)
+          .fontColor(this.isCopied ? $r('app.color.success') : $r('app.color.font_primary'))
       }
       .width('100%')
       .height(44)
       .justifyContent(FlexAlign.Center)
       .borderRadius(10)
       .borderWidth(1)
-      .borderColor(this.isCopied ? SUCCESS_COLOR : DIVIDER_COLOR)
+      .borderColor(this.isCopied ? $r('app.color.success') : $r('app.color.divider'))
       .margin({ top: 16 })
       .onClick(() => {
         this.copyResult();
@@ -258,10 +250,10 @@ struct Index {
       Text('¥')
         .fontSize(48)
         .fontWeight(FontWeight.Lighter)
-        .fontColor(TEXT_TERTIARY)
+        .fontColor($r('app.color.font_tertiary'))
       Text('输入金额后点击「转换为大写」')
         .fontSize(13)
-        .fontColor(TEXT_TERTIARY)
+        .fontColor($r('app.color.font_tertiary'))
         .margin({ top: 12 })
     }
     .width('100%')
@@ -276,11 +268,11 @@ struct Index {
       Button('试试看')
         .fontSize(15)
         .fontWeight(FontWeight.Medium)
-        .fontColor(TEXT_PRIMARY)
-        .backgroundColor('#00000000')
+        .fontColor($r('app.color.font_primary'))
+        .backgroundColor(Color.Transparent)
         .borderRadius(10)
         .borderWidth(1)
-        .borderColor(DIVIDER_COLOR)
+        .borderColor($r('app.color.divider'))
         .layoutWeight(1)
         .height(44)
         .onClick(() => {
@@ -289,11 +281,11 @@ struct Index {
       Button('清除')
         .fontSize(15)
         .fontWeight(FontWeight.Medium)
-        .fontColor((this.input.length > 0 || this.result.length > 0) ? TEXT_PRIMARY : TEXT_TERTIARY)
-        .backgroundColor('#00000000')
+        .fontColor((this.input.length > 0 || this.result.length > 0) ? $r('app.color.font_primary') : $r('app.color.font_tertiary'))
+        .backgroundColor(Color.Transparent)
         .borderRadius(10)
         .borderWidth(1)
-        .borderColor(DIVIDER_COLOR)
+        .borderColor($r('app.color.divider'))
         .layoutWeight(1)
         .height(44)
         .margin({ left: 12 })
@@ -312,12 +304,12 @@ struct Index {
       Column() {
         Text(item.input)
           .fontSize(13)
-          .fontColor(TEXT_TERTIARY)
+          .fontColor($r('app.color.font_tertiary'))
           .fontFamily('monospace')
         Text(item.output)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor(TEXT_PRIMARY)
+          .fontColor($r('app.color.font_primary'))
           .maxLines(2)
           .margin({ top: 4 })
       }
@@ -327,18 +319,18 @@ struct Index {
       Column() {
         Text(HistoryStore.formatTimestamp(item.timestamp))
           .fontSize(11)
-          .fontColor(TEXT_TERTIARY)
+          .fontColor($r('app.color.font_tertiary'))
           .fontFamily('monospace')
         Row() {
           Text(this.copiedHistoryId === item.id ? '已复制' : '复制')
             .fontSize(12)
             .fontWeight(FontWeight.Medium)
-            .fontColor(this.copiedHistoryId === item.id ? SUCCESS_COLOR : TEXT_PRIMARY)
+            .fontColor(this.copiedHistoryId === item.id ? $r('app.color.success') : $r('app.color.font_primary'))
         }
         .padding({ left: 10, right: 10, top: 6, bottom: 6 })
         .borderRadius(8)
         .borderWidth(1)
-        .borderColor(this.copiedHistoryId === item.id ? SUCCESS_COLOR : DIVIDER_COLOR)
+        .borderColor(this.copiedHistoryId === item.id ? $r('app.color.success') : $r('app.color.divider'))
         .margin({ top: 4 })
         .onClick(() => {
           this.copyHistoryItem(item);
@@ -349,10 +341,10 @@ struct Index {
     }
     .width('100%')
     .padding(12)
-    .backgroundColor(SURFACE_COLOR)
+    .backgroundColor($r('app.color.surface'))
     .borderRadius(10)
     .borderWidth(1)
-    .borderColor(DIVIDER_COLOR)
+    .borderColor($r('app.color.divider'))
   }
 
   @Builder
@@ -362,15 +354,15 @@ struct Index {
         Text('历史记录')
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor(TEXT_PRIMARY)
+          .fontColor($r('app.color.font_primary'))
         Blank()
         Text(`最多 ${HistoryStore.MAX_ITEMS} 条`)
           .fontSize(12)
-          .fontColor(TEXT_TERTIARY)
+          .fontColor($r('app.color.font_tertiary'))
         Text('清空')
           .fontSize(13)
           .fontWeight(FontWeight.Medium)
-          .fontColor(ERROR_COLOR)
+          .fontColor($r('app.color.error'))
           .margin({ left: 8 })
           .onClick(() => {
             this.showHistoryClearConfirm = true;
@@ -417,7 +409,7 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(BG_COLOR)
+      .backgroundColor($r('app.color.app_bg'))
 
       // 清除确认
       if (this.showClearConfirm) {
@@ -455,21 +447,21 @@ struct Index {
       Column()
         .width('100%')
         .height('100%')
-        .backgroundColor('#00000080')
+        .backgroundColor($r('app.color.mask'))
       Column() {
         Text(title)
           .fontSize(17)
           .fontWeight(FontWeight.Bold)
-          .fontColor(TEXT_PRIMARY)
+          .fontColor($r('app.color.font_primary'))
           .margin({ bottom: 8 })
         Text(message)
           .fontSize(13)
-          .fontColor(TEXT_SECONDARY)
+          .fontColor($r('app.color.font_secondary'))
           .margin({ bottom: 16 })
         Row() {
           Text('取消')
             .fontSize(15)
-            .fontColor(TEXT_SECONDARY)
+            .fontColor($r('app.color.font_secondary'))
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .onClick(() => {
               this.showClearConfirm = false;
@@ -477,7 +469,7 @@ struct Index {
             })
           Text(confirmText)
             .fontSize(15)
-            .fontColor(ERROR_COLOR)
+            .fontColor($r('app.color.error'))
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .onClick(() => {
               onConfirm();
@@ -488,7 +480,7 @@ struct Index {
       }
       .width('80%')
       .padding(20)
-      .backgroundColor(SURFACE_COLOR)
+      .backgroundColor($r('app.color.surface'))
       .borderRadius(14)
     }
     .width('100%')

@@ -115,7 +115,9 @@ ls -la harmony/release.p12 harmony/release.csr
 > ```
 > 然后在执行 build 前 `export KEY_ALIAS_PASSWORD=...`
 
-## 五、编译 Release HAP
+## 五、编译 Release HAP / APP
+
+### 5.1 编译 HAP（已签名）
 
 ```
 DevEco Studio → Build → Build Hap(s) / APP(s) → Build Hap(s)
@@ -126,12 +128,47 @@ DevEco Studio → Build → Build Hap(s) / APP(s) → Build Hap(s)
 harmony/entry/build/default/outputs/default/entry-default-signed.hap
 ```
 
-## 六、签名验证
+### 5.2 打包成 APP（上架 AGC 用）
+
+AGC 的"软件包管理"要求上传 `.app`（App Pack），而不是单个 `.hap`。把签名后的 HAP 打包成 `.app`：
 
 ```bash
-# 解压 HAP 验证签名
-unzip -l harmony/entry/build/default/outputs/default/entry-default-signed.hap | grep -E "p7b|signature"
-# 应该看到 META-INF/CERT.SF, META-INF/CERT.RSA, META-INF/*SF 等
+cd harmony
+./scripts/build-release-app.sh
+```
+
+或手动用 SDK 的 `app_packing_tool.jar`：
+
+```bash
+java -jar $DEVECO_SDK_HOME/default/openharmony/toolchains/lib/app_packing_tool.jar \
+  --mode app \
+  --hap-path entry/build/default/outputs/default/entry-default-signed.hap \
+  --pack-info-path entry/build/default/outputs/default/pack.info \
+  --out-path entry/build/default/outputs/default/FinanceNumberConverter.app
+```
+
+产物路径：
+```
+harmony/entry/build/default/outputs/default/FinanceNumberConverter.app
+```
+
+## 六、签名验证
+
+### 6.1 HAP 签名
+
+```bash
+# 解压 HAP 验证 V2 签名标志
+unzip -l harmony/entry/build/default/outputs/default/entry-default-signed.hap | grep -E "pages.info|signature"
+# V2 签名会生成 .pages.info 文件
+```
+
+### 6.2 APP 包内容
+
+```bash
+unzip -l harmony/entry/build/default/outputs/default/FinanceNumberConverter.app
+# 应该看到：
+#   entry-default-signed.hap
+#   pack.info
 ```
 
 ## 七、常见问题

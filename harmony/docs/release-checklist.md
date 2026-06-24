@@ -100,11 +100,17 @@
 
 - [ ] **在 AGC 创建 Profile**（后面步骤）
 
-### 2.7 编译 Release HAP
+### 2.7 编译 Release HAP / APP
 - [ ] 修改 `harmony/build-profile.json5` 的 `signingConfigs`（参见 `harmony/docs/signing-config.md`）
-- [ ] Build → Build Hap(s) / APP(s) → Build Hap(s)
-- [ ] 产物路径：`harmony/entry/build/default/outputs/default/entry-default-signed.hap`
-- [ ] 验证 HAP 大小（一般 1-5 MB）
+- [ ] 方式 A（推荐）：直接运行一键脚本
+  ```bash
+  cd harmony
+  ./scripts/build-release-app.sh
+  ```
+- [ ] 方式 B（DevEco Studio UI）：
+  - Build → Build Hap(s) / APP(s) → Build APP(s)
+  - 产物路径：`harmony/entry/build/default/outputs/default/FinanceNumberConverter.app`
+- [ ] 验证产物大小（一般 1-5 MB）
 
 ## 三、AGC 提交（开发者侧）— 30 分钟
 
@@ -113,9 +119,10 @@
 - [ ] 包名：`com.piao.financenumberconverter`
 - [ ] 设备：手机 + 平板
 
-### 3.2 上传 HAP
-- [ ] 软件包管理 → 上传 HAP
-- [ ] 选 Release 编译产物
+### 3.2 上传 APP
+- [ ] 软件包管理 → 上传软件包
+- [ ] 选择 **APP 格式** 的编译产物：`entry-default/outputs/default/FinanceNumberConverter.app`
+- [ ] 注意：AGC 上架要求上传 `.app`（App Pack），不是单个 `.hap`；若文件选择框中 `.hap` 呈灰色无法选中，即说明当前入口要求 `.app`
 
 ### 3.3 填写应用信息
 - [ ] 应用名称、简介、描述（用 2.5 准备的文案）

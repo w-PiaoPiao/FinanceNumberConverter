@@ -1,8 +1,16 @@
 {
   "color": [
-    {
-      "name": "start_window_background",
-      "value": "#FFFFFF"
-    }
+    { "name": "start_window_background", "value": "#FFFFFF" },
+    { "name": "app_bg",                 "value": "#F1F3F5" },
+    { "name": "surface",                "value": "#FFFFFF" },
+    { "name": "font_primary",           "value": "#E5000000" },
+    { "name": "font_secondary",         "value": "#99000000" },
+    { "name": "font_tertiary",          "value": "#66000000" },
+    { "name": "divider",                "value": "#33000000" },
+    { "name": "error",                  "value": "#FA2C2C" },
+    { "name": "success",                "value": "#64BB5C" },
+    { "name": "help_bg",                "value": "#0D000000" },
+    { "name": "help_error_bg",          "value": "#0DFA2C2C" },
+    { "name": "mask",                   "value": "#80000000" }
   ]
 }
