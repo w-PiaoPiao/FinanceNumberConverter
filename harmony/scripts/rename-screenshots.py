@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """
 rename-screenshots.py
+⚠️ 已废弃（2026-06-24）：本脚本只做文件重命名，不做尺寸/比例归一化，
+AGC 严格规格（1080×1920 9:16 JPG ≤5MB）由新脚本处理。
+
+新脚本：scripts/fix-screenshots-for-agc.py
+详见：docs/screenshots/AGENT-SCREENSHOT-GUIDE.md
+
+保留本脚本仅作历史参考，请勿继续使用。
+--- 旧逻辑 ---
 将 harmony/docs/screenshots/ 下的截图批量重命名为 AGC 要求的格式。
 AGC 要求：1.jpg, 2.jpg, 3.jpg ... (JPG/PNG，5 张以内)
 """

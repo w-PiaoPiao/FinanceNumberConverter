@@ -1,49 +1,78 @@
 # 截图归档说明
 
 > 本目录存放上架 AppGallery 用的应用截图。
-> 最后更新：2026-06-22
+> 最后更新：2026-06-24
 
-## 截图清单（建议 5 张）
+## AGC 严格规格（必须满足）
 
-| #   | 文件名                  | 场景                          | 截取步骤                                                   |
-| --- | ----------------------- | ----------------------------- | ---------------------------------------------------------- |
-| 1   | `01-empty-state.png`    | 主页面空状态（¥ + 提示文字）  | 启动 App → 不输入 → 截图                                   |
-| 2   | `02-typing.png`         | 输入数字 + 提示文字           | 输入 `1234.56` → 未点击转换 → 截图                        |
-| 3   | `03-result.png`         | 转换结果 + 复制按钮           | 输入 `1234.56` → 点「转换为大写」→ 截图                   |
-| 4   | `04-history.png`        | 历史记录                       | 多转几次后 → 截图                                          |
-| 5   | `05-clear-dialog.png`   | 清除确认对话框                | 点「清除」→ 弹出对话框 → 截图                              |
+| 项 | 要求 |
+| --- | --- |
+| 数量 | 3~5 张 |
+| **最低尺寸** | **1080 × 1920 px** |
+| **宽高比** | **9 : 16** |
+| 格式 | PNG / JPG / JPEG（≤ 5 MB），WEBP（≤ 200 KB） |
 
-## 尺寸要求
+不满足规格 AGC 会弹"图片尺寸不符合要求"并拒绝上传。
 
-- **建议分辨率**：1080 × 2340 px（或模拟器原生分辨率）
-- **格式**：PNG（无压缩）
-- **比例**：9:19.5 或类似手机比例
-- **单张文件**：≤ 5 MB
+## 目录结构
 
-## 截取方法
+```
+docs/screenshots/
+├── README.md                  # 本文件
+├── AGENT-SCREENSHOT-GUIDE.md  # 截屏步骤详细指南
+├── 01~05-*.png                # ⚠️ 旧版原始截图（仅供参考，规格可能不符）
+├── raw/                       # ⭐ 重截的原始截图（建议放这里）
+│   ├── 01-empty-state.png
+│   ├── 02-typing.png
+│   ├── 03-result.png
+│   ├── 04-history.png
+│   └── 05-clear-dialog.png
+└── AGC-ready/                 # ⭐ 归一化后的 AGC 上传图
+    ├── 1.jpg   (1080×1920)
+    ├── 2.jpg
+    ├── 3.jpg
+    ├── 4.jpg
+    └── 5.jpg
+```
 
-### DevEco Studio 内置
-1. 启动模拟器
-2. App 跑到目标状态
-3. 模拟器右侧 **截图图标** 📷 或菜单 **Tools → Take Screenshot**
-4. 保存到本目录
+## 标准流程
 
-### 模拟器快捷键
-- macOS：`Cmd + S`（在模拟器窗口聚焦时）
+```bash
+# 1. 在 DevEco Studio 模拟器截 5 张图（详见 AGENT-SCREENSHOT-GUIDE.md）
+# 2. 放进 raw/ 目录
+cp /path/to/your/01-empty-state.png docs/screenshots/raw/
+# ... 其他 4 张同理
 
-### 文件命名
-按上面表格的命名规则，方便后续 AGC 提交时按顺序上传。
+# 3. 跑归一化脚本
+python3 scripts/fix-screenshots-for-agc.py
+
+# 4. 验收 AGC-ready/ 里的 5 张 JPG
+open docs/screenshots/AGC-ready/
+
+# 5. 一次性上传 AGC
+# AGC → 应用介绍 → 应用介绍截图 → 拖入 1.jpg ~ 5.jpg
+```
+
+## 5 张图场景
+
+| #   | 文件名                | 场景                          | 截取步骤                                                |
+| --- | --------------------- | ----------------------------- | ------------------------------------------------------- |
+| 1   | `01-empty-state.png`  | 主页面空状态（¥ + 提示文字）  | 启动 App → 不输入 → 截图                                |
+| 2   | `02-typing.png`       | 输入数字 + 提示文字           | 输入 `1234.56` → 未点击转换 → 截图                     |
+| 3   | `03-result.png`       | 转换结果 + 复制按钮           | 输入 `1234.56` → 点「转换为大写」→ 页面置顶 → 截图     |
+| 4   | `04-history.png`      | 历史记录                       | 多转几次后 → 页面置顶 → 截图                            |
+| 5   | `05-clear-dialog.png` | 清除确认对话框                | 点「清除」→ 弹出对话框 → 截图                           |
 
 ## 配套脚本
 
-`harmony/scripts/rename-screenshots.py` 可以批量重命名为 AGC 要求的格式：
+| 脚本 | 用途 | 状态 |
+| --- | --- | --- |
+| `scripts/fix-screenshots-for-agc.py` | raw → 1080×1920 9:16 JPG | **推荐** |
+| `scripts/rename-screenshots.py` | 旧版：raw → AGC-ready 重命名复制 | **已废弃** |
 
-```bash
-cd harmony
-python3 scripts/rename-screenshots.py
-```
+## 详细截屏步骤
 
-输出到 `harmony/docs/screenshots/AGC-ready/`，按 AGC 要求编号。
+见 [`AGENT-SCREENSHOT-GUIDE.md`](./AGENT-SCREENSHOT-GUIDE.md)
 
 ---
 
