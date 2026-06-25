@@ -1,18 +1,16 @@
 # DevEco Studio AGC 截屏指南
 
 > 本文档是 `harmony/docs/screenshots/README.md` 的补充。
-> 最后更新：2026-06-24
+> 最后更新：2026-06-25
 
 ## AGC 严格规格（重要）
 
 上传 AppGallery Connect 的截图**必须**满足：
 
-| 项 | 要求 |
-| --- | --- |
-| 数量 | 3~5 张 |
-| 最低尺寸 | **1080 × 1920 px** |
-| 宽高比 | **9 : 16** |
-| 格式 | PNG / JPG / JPEG（≤ 5 MB），WEBP（≤ 200 KB） |
+| 设备类型 | 数量 | 最低尺寸 | 宽高比 | 格式 |
+| --- | --- | --- | --- | --- |
+| **手机/平板** | 3~5 张 | **1080 × 1920 px** | **9 : 16** | PNG/JPG/JPEG（≤ 5 MB），WEBP（≤ 200 KB）|
+| **PC/2in1** | 3~5 张 | **1920 × 1080 px** | **16 : 9** | 同上 |
 
 **不满足规格会被 AGC 拒绝**（弹窗"图片尺寸不符合要求"）。
 
@@ -67,34 +65,58 @@ harmony/docs/screenshots/raw/
 
 ## 归一化处理
 
-放好 5 张 PNG 后跑：
+放好 PNG 后跑：
 
 ```bash
 cd harmony
-python3 scripts/fix-screenshots-for-agc.py
+
+# 手机/平板版（默认 9:16）
+python3 scripts/fix-screenshots-for-agc.py --device phone
+
+# PC/2in1 版（横版 16:9）
+python3 scripts/fix-screenshots-for-agc.py --device pc
 ```
 
 脚本会自动：
 1. RGBA → RGB 白色底
-2. 等比缩放（保证短边 = 1920px）
-3. 按每张图的预设偏移裁剪到 **1080 × 1920**
+2. 等比缩放（保证覆盖目标画布）
+3. 按每张图的预设偏移裁剪到目标尺寸
 4. 转 JPG（质量 90）
 5. 验证文件 < 5 MB
-6. 输出到 `harmony/docs/screenshots/AGC-ready/1.jpg` ~ `5.jpg`
+6. 输出到 `harmony/docs/screenshots/AGC-ready/{N.jpg, PC/N.jpg}`
 
 ## 直接上传 AGC
 
-把 `AGC-ready/1.jpg` ~ `5.jpg` 一次性拖到 AGC 上传框：
+- **手机/平板**：把 `AGC-ready/1.jpg` ~ `5.jpg` 拖到「手机/平板」标签的上传框
+- **PC/2in1**：切换到「PC/2in1」标签，把 `AGC-ready/PC/1.jpg` ~ `5.jpg` 拖到上传框
 
-> AGC → 我的应用 → 应用详情 → 应用介绍 → 应用介绍截图 → 上传图片
+> AGC → 我的应用 → 应用详情 → 应用介绍 → 素材管理 → 选择设备类型标签 → 上传图片
 
 ## 常见错误
 
 | 错误 | 原因 | 解决 |
 | --- | --- | --- |
-| "图片尺寸不符合要求" | 宽高比 ≠ 9:16 或宽 < 1080 | 跑归一化脚本 |
-| AGC 看不到缩略图 | 文件 > 5 MB | 降低 JPG 质量（修改脚本 JPG_QUALITY） |
-| 截图带外框 | 没关模拟器外框 | `⌘ + Shift + F` |
+| "图片尺寸不符合要求" | 宽高比 ≠ 9:16 (手机) / 16:9 (PC) 或尺寸不足 | 跑归一化脚本 |
+| AGC 看不到缩略图 | 文件 > 5 MB | 降低 JPG 质量（修改脚本 JPG_QUALITY）|
+| 截图带外框（手机） | 没关模拟器外框 | `⌘ + Shift + F` |
+| PC 版带 Dock 任务栏 | 截全屏 | 归一化脚本会自动裁掉 Dock |
+
+---
+
+## PC/2in1 截屏特别说明
+
+PC/2in1 版截屏和手机版**完全独立**，需要：
+
+1. 在 DevEco Studio 启动 **PC 模拟器**（不是手机/平板）
+2. 跑同样的 5 个状态（empty / typing / result / history / dialog）
+3. 截图（DevEco 默认文件名是 `Screenshot_YYYY-MM-DDTHHMMSS.png`，脚本会自动按时间排序匹配）
+4. 把 5 张 PC 图放进 `docs/screenshots/raw/`
+5. 跑 `python3 scripts/fix-screenshots-for-agc.py --device pc`
+
+**截图注意事项**：
+- PC 模拟器通常有顶部状态栏（应用标题 + 控制按钮）和底部 Dock 任务栏
+- 脚本会自动裁掉这些系统 UI，只保留 app 主体内容
+- 如果截图是 3:2 比例（3120×2080 等），脚本会按 16:9 居中裁剪
 
 ---
 

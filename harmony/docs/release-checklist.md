@@ -33,18 +33,30 @@
 
 ### 2.3 截图准备
 
-> ⚠️ **AGC 严格规格**：1080×1920px，9:16，JPG/PNG ≤ 5MB。
+> ⚠️ **AGC 严格规格**：
+> - 手机/平板：1080×1920px，9:16，JPG/PNG ≤ 5MB
+> - PC/2in1：1920×1080px，16:9，JPG/PNG ≤ 5MB
 > 不满足会弹"图片尺寸不符合要求"并拒绝。
 
+#### 2.3.1 手机/平板版
 - [ ] 启动 DevEco Studio 模拟器（推荐 P40 / Mate 50）
 - [ ] **关闭手机外框**：`⌘+Shift+F`（关键！带外框会被压缩到 562px 宽，直接不合格）
 - [ ] 截 5 张图放进 `harmony/docs/screenshots/raw/`（详见 `docs/screenshots/AGENT-SCREENSHOT-GUIDE.md`）
+
+#### 2.3.2 PC/2in1 版
+- [ ] 启动 DevEco Studio PC 模拟器
+- [ ] 截 5 张图放进 `harmony/docs/screenshots/raw/`（DevEco 默认命名 `Screenshot_*.png`）
+
+#### 2.3.3 归一化处理
 - [ ] 跑归一化脚本：
   ```bash
   cd harmony
-  python3 scripts/fix-screenshots-for-agc.py
+  python3 scripts/fix-screenshots-for-agc.py --device phone
+  python3 scripts/fix-screenshots-for-agc.py --device pc
   ```
-- [ ] 确认 `harmony/docs/screenshots/AGC-ready/` 下有 1.jpg ~ 5.jpg，每张都是 **1080×1920 9:16 JPG < 5MB**
+- [ ] 确认 `AGC-ready/` 下有 1.jpg ~ 5.jpg（1080×1920 9:16）
+- [ ] 确认 `AGC-ready/PC/` 下有 1.jpg ~ 5.jpg（1920×1080 16:9）
+- [ ] 全部文件 < 5MB
 
 ### 2.4 App 图标
 - [x] `harmony/entry/src/main/resources/base/media/app_icon.png` 已生成
@@ -135,7 +147,8 @@
 - [ ] 应用分类
 - [ ] 标签
 - [ ] 应用图标
-- [ ] 截图 3-5 张（从 `AGC-ready/` 取 1.jpg ~ 5.jpg，规格 **1080×1920 9:16 JPG**）
+- [ ] 截图 3-5 张（手机/平板版：从 `AGC-ready/` 取 1.jpg ~ 5.jpg，规格 **1080×1920 9:16 JPG**）
+- [ ] 截图 3-5 张（PC/2in1 版：从 `AGC-ready/PC/` 取 1.jpg ~ 5.jpg，规格 **1920×1080 16:9 JPG**）
 
 ### 3.4 隐私与权限
 - [ ] 隐私政策 URL
