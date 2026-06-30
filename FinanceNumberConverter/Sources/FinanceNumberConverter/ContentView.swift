@@ -222,25 +222,41 @@ struct ContentView: View {
                         .strokeBorder(Color(.separator), lineWidth: 1)
                 )
 
-            // 复制按钮
-            Button(action: performCopy) {
-                HStack(spacing: 6) {
-                    Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
-                        .font(.system(size: 14, weight: .medium))
-                    Text(isCopied ? "已复制" : "一键复制")
-                        .font(.system(size: 15, weight: .medium))
+            // 操作按钮行
+            HStack(spacing: 12) {
+                // 复制按钮
+                Button(action: performCopy) {
+                    HStack(spacing: 6) {
+                        Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                            .font(.system(size: 14, weight: .medium))
+                        Text(isCopied ? "已复制" : "一键复制")
+                            .font(.system(size: 15, weight: .medium))
+                    }
+                    .foregroundStyle(isCopied ? Color(.systemGreen) : Color(.label))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(
+                                isCopied ? Color(.systemGreen).opacity(0.4) : Color(.separator),
+                                lineWidth: 1
+                            )
+                    )
                 }
-                .foregroundStyle(isCopied ? Color(.systemGreen) : Color(.label))
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(Color.clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(
-                            isCopied ? Color(.systemGreen).opacity(0.4) : Color(.separator),
-                            lineWidth: 1
+
+                // 分享按钮
+                Button(action: performShare) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(Color(.label))
+                        .frame(width: 44, height: 44)
+                        .background(Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(Color(.separator), lineWidth: 1)
                         )
-                )
+                }
             }
         }
     }
@@ -346,6 +362,18 @@ struct ContentView: View {
         // 2 秒后恢复按钮文字
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isCopied = false
+        }
+    }
+
+    /// 分享到其他 App
+    private func performShare() {
+        guard !result.isEmpty else { return }
+        let shareText = "财务大写转换：\(input) → \(result)"
+        let activityVC = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = windowScene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
         }
     }
 

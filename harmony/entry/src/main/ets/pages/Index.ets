@@ -18,6 +18,8 @@ import { AmountInputValidator } from '../converter/AmountInputValidator';
 import { HistoryStore } from '../converter/HistoryStore';
 import { HistoryItem } from '../model/HistoryItem';
 import { ClipboardUtil } from '../utils/Clipboard';
+import dataPreferences from '@ohos.data.preferences';
+import common from '@ohos.app.ability.common';
 
 
 @Entry
@@ -32,11 +34,13 @@ struct Index {
   @State history: HistoryItem[] = [];
   @State copiedHistoryId: string = '';
   @State showFractionHint: boolean = false;
+  @State showPrivacyDialog: boolean = false;
+  @State showPrivacyDetail: boolean = false;
 
   private sampleNumber: string = '1234.56';
 
   aboutToAppear() {
-    // 启动时聚焦由 .defaultFocus(true) 处理
+    this.checkPrivacyAccepted();
   }
 
   // 帮助文字
@@ -115,12 +119,44 @@ struct Index {
     }, 2000);
   }
 
+  private performShare(): void {
+    if (this.result.length === 0) {
+      return;
+    }
+    let shareText = `财务大写转换：${this.input} → ${this.result}`;
+    let want = {
+      action: 'ohos.want.action.sendData',
+      type: 'text/plain',
+      parameters: {
+        'ability.params.stream': shareText
+      }
+    };
+    (getContext() as common.UIAbilityContext).startAbility(want);
+  }
+
   private async copyHistoryItem(item: HistoryItem): Promise<void> {
     await ClipboardUtil.copy(item.output);
     this.copiedHistoryId = item.id;
     setTimeout(() => {
       this.copiedHistoryId = '';
     }, 2000);
+  }
+
+  private checkPrivacyAccepted(): void {
+    let preferences = dataPreferences.getPreferencesSync(getContext(), { name: 'fnc_prefs' });
+    let accepted = preferences.getSync('privacy_policy_accepted', false) as boolean;
+    this.showPrivacyDialog = !accepted;
+  }
+
+  private acceptPrivacyPolicy(): void {
+    let preferences = dataPreferences.getPreferencesSync(getContext(), { name: 'fnc_prefs' });
+    preferences.putSync('privacy_policy_accepted', true);
+    preferences.flushSync();
+    this.showPrivacyDialog = false;
+  }
+
+  private exitApp(): void {
+    (getContext() as common.UIAbilityContext).terminateSelf();
   }
 
   // ===== 标题 =====
@@ -222,23 +258,45 @@ struct Index {
         .borderWidth(1)
         .borderColor($r('app.color.divider'))
 
-      // 复制按钮
+      // 操作按钮行
       Row() {
-        Text(this.isCopied ? '已复制' : '一键复制')
-          .fontSize(15)
-          .fontWeight(FontWeight.Medium)
-          .fontColor(this.isCopied ? $r('app.color.success') : $r('app.color.font_primary'))
+        // 复制按钮
+        Row() {
+          Text(this.isCopied ? '已复制' : '一键复制')
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(this.isCopied ? $r('app.color.success') : $r('app.color.font_primary'))
+        }
+        .layoutWeight(1)
+        .height(44)
+        .justifyContent(FlexAlign.Center)
+        .borderRadius(10)
+        .borderWidth(1)
+        .borderColor(this.isCopied ? $r('app.color.success') : $r('app.color.divider'))
+        .onClick(() => {
+          this.copyResult();
+        })
+
+        Blank().width(12)
+
+        // 分享按钮
+        Row() {
+          Text('↗')
+            .fontSize(20)
+            .fontColor($r('app.color.font_primary'))
+        }
+        .width(44)
+        .height(44)
+        .justifyContent(FlexAlign.Center)
+        .borderRadius(10)
+        .borderWidth(1)
+        .borderColor($r('app.color.divider'))
+        .onClick(() => {
+          this.performShare();
+        })
       }
       .width('100%')
-      .height(44)
-      .justifyContent(FlexAlign.Center)
-      .borderRadius(10)
-      .borderWidth(1)
-      .borderColor(this.isCopied ? $r('app.color.success') : $r('app.color.divider'))
       .margin({ top: 16 })
-      .onClick(() => {
-        this.copyResult();
-      })
     }
     .width('100%')
   }
@@ -399,7 +457,14 @@ struct Index {
               Blank().height(24)
               this.HistorySection()
             }
-            Blank().height(32)
+            Blank().height(16)
+            Text('隐私政策')
+              .fontSize(12)
+              .fontColor($r('app.color.font_tertiary'))
+              .onClick(() => {
+                this.showPrivacyDetail = true;
+              })
+            Blank().height(16)
           }
           .width('100%')
           .padding({ left: 20, right: 20, top: 8 })
@@ -435,6 +500,14 @@ struct Index {
             this.showHistoryClearConfirm = false;
           }
         )
+      }
+
+      if (this.showPrivacyDialog) {
+        this.PrivacyPolicyDialog()
+      }
+
+      if (this.showPrivacyDetail) {
+        this.PrivacyDetailDialog()
       }
     }
     .width('100%')
@@ -480,6 +553,212 @@ struct Index {
       }
       .width('80%')
       .padding(20)
+      .backgroundColor($r('app.color.surface'))
+      .borderRadius(14)
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  @Builder
+  PrivacyPolicyDialog() {
+    Stack({ alignContent: Alignment.Center }) {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor($r('app.color.mask'))
+      Column() {
+        Text('隐私政策')
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.font_primary'))
+          .margin({ bottom: 16 })
+        Scroll() {
+          Column() {
+            Text('本应用尊重并保护您的隐私。请您仔细阅读以下条款：')
+              .fontSize(14)
+              .fontColor($r('app.color.font_primary'))
+              .lineHeight(22)
+            Blank().height(12)
+            Text('• 不收集姓名、身份证号、手机号等身份信息')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 不收集设备信息、位置信息')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 不集成任何第三方 SDK')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 不进行任何网络通信')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 所有数据仅存储设备本地')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 剪贴板权限仅用于「一键复制」')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+          }
+          .width('100%')
+        }
+        .constraintSize({ maxHeight: 240 })
+        .width('100%')
+        .padding({ bottom: 16 })
+        Text('点击下方「同意并继续」即表示您已阅读并同意以上条款。')
+          .fontSize(12)
+          .fontColor($r('app.color.font_tertiary'))
+          .lineHeight(18)
+          .margin({ bottom: 16 })
+        Button('同意并继续')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.surface'))
+          .backgroundColor($r('app.color.font_primary'))
+          .borderRadius(10)
+          .width('100%')
+          .height(48)
+          .onClick(() => {
+            this.acceptPrivacyPolicy();
+          })
+        Blank().height(12)
+        Text('不同意并退出')
+          .fontSize(14)
+          .fontColor($r('app.color.font_secondary'))
+          .onClick(() => {
+            this.exitApp();
+          })
+      }
+      .width('85%')
+      .padding(24)
+      .backgroundColor($r('app.color.surface'))
+      .borderRadius(14)
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  @Builder
+  PrivacyDetailDialog() {
+    Stack({ alignContent: Alignment.Center }) {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor($r('app.color.mask'))
+      Column() {
+        Row() {
+          Text('隐私政策')
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.font_primary'))
+          Blank()
+          Text('关闭')
+            .fontSize(14)
+            .fontColor($r('app.color.font_secondary'))
+            .onClick(() => {
+              this.showPrivacyDetail = false;
+            })
+        }
+        .width('100%')
+        .margin({ bottom: 16 })
+        Scroll() {
+          Column() {
+            Text('最后更新：2026-06-22')
+              .fontSize(12)
+              .fontColor($r('app.color.font_tertiary'))
+              .margin({ bottom: 12 })
+            Text('本应用（以下简称"本 App"）由个人开发者 Piao 开发，深知个人信息保护的重要性，特此向用户说明本 App 如何收集、使用、存储和保护用户信息。请用户在使用本 App 前仔细阅读本政策。')
+              .fontSize(14)
+              .fontColor($r('app.color.font_primary'))
+              .lineHeight(22)
+              .margin({ bottom: 12 })
+            Text('一、本 App 不收集的信息')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.font_primary'))
+              .margin({ bottom: 8 })
+            Text('本 App 不会收集、存储、上传以下任何信息：')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 用户身份信息（姓名、身份证号、手机号、邮箱等）')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 设备信息（设备型号、IMEI、MAC 地址等）')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 位置信息（GPS、IP 定位等）')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 任何形式的网络请求数据')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('• 任何第三方 SDK 的数据共享')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+              .margin({ bottom: 12 })
+            Text('二、使用的系统权限')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.font_primary'))
+              .margin({ bottom: 8 })
+            Text('剪贴板访问：仅用于「一键复制」功能，用户主动点击按钮时触发。本 App 不会主动读取剪贴板内容。')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+              .margin({ bottom: 12 })
+            Text('三、数据处理方式')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.font_primary'))
+              .margin({ bottom: 8 })
+            Text('所有用户输入和转换结果仅存储在设备内存中，不写本地数据库、不写文件、不写 SharedPreferences。历史记录最多 10 条，重启 App 后清空。')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+              .margin({ bottom: 12 })
+            Text('四、网络行为')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.font_primary'))
+              .margin({ bottom: 8 })
+            Text('本 App 完全不进行任何网络通信：不发起 HTTP/HTTPS 请求，不连接任何服务器，不使用任何第三方网络 SDK，不使用任何统计分析、崩溃上报、推送服务。')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+              .margin({ bottom: 12 })
+            Text('五、联系方式')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.font_primary'))
+              .margin({ bottom: 8 })
+            Text('邮箱：w_PiaoPiao2026@163.com')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+            Text('GitHub：github.com/w-PiaoPiao/FinanceNumberConverter')
+              .fontSize(13)
+              .fontColor($r('app.color.font_secondary'))
+              .lineHeight(20)
+          }
+          .width('100%')
+        }
+        .width('100%')
+        .height(420)
+      }
+      .width('85%')
+      .constraintSize({ maxHeight: 560 })
+      .padding(24)
       .backgroundColor($r('app.color.surface'))
       .borderRadius(14)
     }

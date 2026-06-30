@@ -1,8 +1,10 @@
 package com.example.financenumberconverter.ui.screen
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -79,6 +82,8 @@ fun ConverterScreen() {
     var isShowingHistoryClearConfirm by remember { mutableStateOf(false) }
     var history by remember { mutableStateOf<List<HistoryItem>>(emptyList()) }
     var copiedHistoryId by remember { mutableStateOf<String?>(null) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showPrivacyDetail by remember { mutableStateOf(false) }
 
     // 计算属性
     val fractionDigits by remember(input) {
@@ -108,6 +113,14 @@ fun ConverterScreen() {
         if (copiedHistoryId != null) {
             delay(2000)
             copiedHistoryId = null
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val prefs = context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
+        val accepted = prefs.getBoolean("privacy_policy_accepted", false)
+        if (!accepted) {
+            showPrivacyDialog = true
         }
     }
 
@@ -159,6 +172,27 @@ fun ConverterScreen() {
         copiedHistoryId = item.id.toString()
     }
 
+    fun acceptPrivacyPolicy() {
+        val prefs = context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("privacy_policy_accepted", true).apply()
+        showPrivacyDialog = false
+    }
+
+    fun exitApp() {
+        (context as? Activity)?.finishAffinity()
+    }
+
+    fun shareResult() {
+        if (result.isEmpty()) return
+        val shareText = "财务大写转换：${input} → ${result}"
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
+        context.startActivity(Intent.createChooser(intent, "分享到"))
+    }
+
     // ===== UI =====
     Column(
         modifier = Modifier
@@ -195,7 +229,8 @@ fun ConverterScreen() {
             ResultSection(
                 result = result,
                 isCopied = isCopied,
-                onCopy = ::copyResult
+                onCopy = ::copyResult,
+                onShare = ::shareResult
             )
         } else {
             EmptyResultHint()
@@ -225,6 +260,14 @@ fun ConverterScreen() {
                 onClearAll = { isShowingHistoryClearConfirm = true }
             )
         }
+
+        // 隐私政策链接
+        Text(
+            text = "隐私政策",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.clickable { showPrivacyDetail = true }
+        )
 
         // 底部留白
         Spacer(modifier = Modifier.size(32.dp))
@@ -269,6 +312,107 @@ fun ConverterScreen() {
             dismissButton = {
                 TextButton(onClick = { isShowingHistoryClearConfirm = false }) {
                     Text("取消")
+                }
+            }
+        )
+    }
+
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("隐私政策") },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    Text("本应用尊重并保护您的隐私。请您仔细阅读以下条款：",
+                        fontSize = 14.sp)
+                    Spacer(Modifier.height(12.dp))
+                    Text("• 不收集姓名、身份证号、手机号等身份信息",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 不收集设备信息、位置信息",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 不集成任何第三方 SDK",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 不进行任何网络通信",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 所有数据仅存储设备本地",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 剪贴板权限仅用于「一键复制」",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(12.dp))
+                    Text("点击下方「同意并继续」即表示您已阅读并同意以上条款。",
+                        fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = ::acceptPrivacyPolicy) {
+                    Text("同意并继续")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = ::exitApp) {
+                    Text("不同意并退出", color = MaterialTheme.colorScheme.error)
+                }
+            }
+        )
+    }
+
+    if (showPrivacyDetail) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDetail = false },
+            title = { Text("隐私政策") },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    Text("最后更新：2026-06-22",
+                        fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
+                    Spacer(Modifier.height(12.dp))
+                    Text("本应用（以下简称\"本 App\"）由个人开发者 Piao 开发，深知个人信息保护的重要性，特此向用户说明本 App 如何收集、使用、存储和保护用户信息。请用户在使用本 App 前仔细阅读本政策。")
+                    Spacer(Modifier.height(12.dp))
+                    Text("一、本 App 不收集的信息",
+                        fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(8.dp))
+                    Text("本 App 不会收集、存储、上传以下任何信息：",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 用户身份信息（姓名、身份证号、手机号、邮箱等）",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 设备信息（设备型号、IMEI、MAC 地址等）",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 位置信息（GPS、IP 定位等）",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 任何形式的网络请求数据",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("• 任何第三方 SDK 的数据共享",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(12.dp))
+                    Text("二、使用的系统权限",
+                        fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(8.dp))
+                    Text("剪贴板访问：仅用于「一键复制」功能，用户主动点击按钮时触发。本 App 不会主动读取剪贴板内容。",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(12.dp))
+                    Text("三、数据处理方式",
+                        fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(8.dp))
+                    Text("所有用户输入和转换结果仅存储在设备内存中，不写本地数据库、不写文件。历史记录最多 10 条，重启 App 后清空。",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(12.dp))
+                    Text("四、网络行为",
+                        fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(8.dp))
+                    Text("本 App 完全不进行任何网络通信：不发起 HTTP/HTTPS 请求，不连接任何服务器，不使用任何第三方网络 SDK，不使用任何统计分析、崩溃上报、推送服务。",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(12.dp))
+                    Text("五、联系方式",
+                        fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(8.dp))
+                    Text("邮箱：w_PiaoPiao2026@163.com",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("GitHub：github.com/w-PiaoPiao/FinanceNumberConverter",
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyDetail = false }) {
+                    Text("关闭")
                 }
             }
         )
@@ -418,7 +562,8 @@ private fun PrimaryButton(
 private fun ResultSection(
     result: String,
     isCopied: Boolean,
-    onCopy: () -> Unit
+    onCopy: () -> Unit,
+    onShare: () -> Unit
 ) {
     val borderColor = if (isCopied) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
@@ -452,30 +597,49 @@ private fun ResultSection(
             )
         }
 
-        // 复制按钮
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .border(1.dp, borderColor, RoundedCornerShape(10.dp))
-                .clip(RoundedCornerShape(10.dp))
-                .clickable(onClick = onCopy),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = if (isCopied) Icons.Filled.Check else Icons.Filled.ContentCopy,
-                contentDescription = null,
-                tint = textColor,
-                modifier = Modifier.size(14.dp)
-            )
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(
-                text = if (isCopied) "已复制" else "一键复制",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = textColor
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            // 复制按钮
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp)
+                    .border(1.dp, borderColor, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable(onClick = onCopy),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = if (isCopied) Icons.Filled.Check else Icons.Filled.ContentCopy,
+                    contentDescription = null,
+                    tint = textColor,
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.size(6.dp))
+                Text(
+                    text = if (isCopied) "已复制" else "一键复制",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = textColor
+                )
+            }
+
+            // 分享按钮
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable(onClick = onShare),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Share,
+                    contentDescription = "分享",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
