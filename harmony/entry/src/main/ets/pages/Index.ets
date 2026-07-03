@@ -20,6 +20,8 @@ import { HistoryItem } from '../model/HistoryItem';
 import { ClipboardUtil } from '../utils/Clipboard';
 import dataPreferences from '@ohos.data.preferences';
 import common from '@ohos.app.ability.common';
+import Want from '@ohos.app.ability.Want';
+import inputMethod from '@ohos.inputMethod';
 
 
 @Entry
@@ -36,6 +38,8 @@ struct Index {
   @State showFractionHint: boolean = false;
   @State showPrivacyDialog: boolean = false;
   @State showPrivacyDetail: boolean = false;
+  @State showTutorial: boolean = false;
+  @State tutorialStep: number = 0;
 
   private sampleNumber: string = '1234.56';
 
@@ -91,6 +95,11 @@ struct Index {
     const converted: string = NumberConverter.convert(amount);
     this.result = converted;
     this.errorMessage = '';
+    try {
+      inputMethod.getController().stopInputSession();
+    } catch (_e) {
+      // ignore
+    }
     // 写入历史
     const item: HistoryItem = new HistoryItem(trimmed, converted);
     this.history = HistoryStore.add(item, this.history);
@@ -124,14 +133,18 @@ struct Index {
       return;
     }
     let shareText = `财务大写转换：${this.input} → ${this.result}`;
-    let want = {
+    let want: Want = {
       action: 'ohos.want.action.sendData',
       type: 'text/plain',
       parameters: {
         'ability.params.stream': shareText
       }
     };
-    (getContext() as common.UIAbilityContext).startAbility(want);
+    try {
+      (getContext() as common.UIAbilityContext).startAbility(want);
+    } catch (_e) {
+      // ignore
+    }
   }
 
   private async copyHistoryItem(item: HistoryItem): Promise<void> {
@@ -145,18 +158,38 @@ struct Index {
   private checkPrivacyAccepted(): void {
     let preferences = dataPreferences.getPreferencesSync(getContext(), { name: 'fnc_prefs' });
     let accepted = preferences.getSync('privacy_policy_accepted', false) as boolean;
-    this.showPrivacyDialog = !accepted;
+    let tutorialShown = preferences.getSync('has_shown_tutorial', false) as boolean;
+    if (!accepted) {
+      this.showPrivacyDialog = true;
+    } else if (!tutorialShown) {
+      this.showTutorial = true;
+    }
   }
 
   private acceptPrivacyPolicy(): void {
     let preferences = dataPreferences.getPreferencesSync(getContext(), { name: 'fnc_prefs' });
     preferences.putSync('privacy_policy_accepted', true);
-    preferences.flushSync();
+    preferences.flush();
     this.showPrivacyDialog = false;
+    let tutorialShown = preferences.getSync('has_shown_tutorial', false) as boolean;
+    if (!tutorialShown) {
+      this.showTutorial = true;
+    }
   }
 
   private exitApp(): void {
-    (getContext() as common.UIAbilityContext).terminateSelf();
+    try {
+      (getContext() as common.UIAbilityContext).terminateSelf();
+    } catch (_e) {
+      // ignore
+    }
+  }
+
+  private dismissTutorial(): void {
+    let preferences = dataPreferences.getPreferencesSync(getContext(), { name: 'fnc_prefs' });
+    preferences.putSync('has_shown_tutorial', true);
+    preferences.flush();
+    this.showTutorial = false;
   }
 
   // ===== 标题 =====
@@ -235,6 +268,7 @@ struct Index {
       .width('100%')
       .height(50)
       .enabled(this.input.length > 0)
+      .clickEffect({ level: ClickEffectLevel.LIGHT })
       .onClick(() => {
         this.performConvert();
       })
@@ -273,6 +307,7 @@ struct Index {
         .borderRadius(10)
         .borderWidth(1)
         .borderColor(this.isCopied ? $r('app.color.success') : $r('app.color.divider'))
+        .clickEffect({ level: ClickEffectLevel.LIGHT })
         .onClick(() => {
           this.copyResult();
         })
@@ -291,6 +326,7 @@ struct Index {
         .borderRadius(10)
         .borderWidth(1)
         .borderColor($r('app.color.divider'))
+        .clickEffect({ level: ClickEffectLevel.LIGHT })
         .onClick(() => {
           this.performShare();
         })
@@ -333,6 +369,7 @@ struct Index {
         .borderColor($r('app.color.divider'))
         .layoutWeight(1)
         .height(44)
+        .clickEffect({ level: ClickEffectLevel.LIGHT })
         .onClick(() => {
           this.loadSample();
         })
@@ -348,6 +385,7 @@ struct Index {
         .height(44)
         .margin({ left: 12 })
         .enabled(this.input.length > 0 || this.result.length > 0)
+        .clickEffect({ level: ClickEffectLevel.LIGHT })
         .onClick(() => {
           this.showClearConfirm = true;
         })
@@ -447,9 +485,15 @@ struct Index {
             this.PrimaryButtonSection()
             Blank().height(24)
             if (this.result.length > 0) {
-              this.ResultSection()
+              Column() {
+                this.ResultSection()
+              }
+              .transition(TransitionEffect.opacity(0).combine(TransitionEffect.translate({ y: 20 })))
             } else {
-              this.EmptyResult()
+              Column() {
+                this.EmptyResult()
+              }
+              .transition(TransitionEffect.opacity(0))
             }
             Blank().height(24)
             this.SecondaryButtons()
@@ -509,6 +553,66 @@ struct Index {
       if (this.showPrivacyDetail) {
         this.PrivacyDetailDialog()
       }
+
+      if (this.showTutorial) {
+        this.TutorialDialog()
+      }
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  @Builder
+  TutorialDialog() {
+    Stack({ alignContent: Alignment.Center }) {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor($r('app.color.mask'))
+      Column() {
+        Text(`步骤 ${this.tutorialStep + 1}/3`)
+          .fontSize(22)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(Color.White)
+        Blank().height(12)
+        if (this.tutorialStep === 0) {
+          Text('在输入框中输入金额数字，\n例如 1234.56')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .textAlign(TextAlign.Center)
+            .lineHeight(24)
+        } else if (this.tutorialStep === 1) {
+          Text('点击「转换为大写」按钮\n查看转换结果')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .textAlign(TextAlign.Center)
+            .lineHeight(24)
+        } else {
+          Text('结果可一键复制，\n也可分享给其他应用')
+            .fontSize(16)
+            .fontColor(Color.White)
+            .textAlign(TextAlign.Center)
+            .lineHeight(24)
+        }
+        Blank().height(24)
+        Button(this.tutorialStep === 2 ? '开始使用' : '下一步')
+          .fontSize(17)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(Color.Black)
+          .backgroundColor(Color.White)
+          .borderRadius(12)
+          .width(200)
+          .height(48)
+          .onClick(() => {
+            if (this.tutorialStep < 2) {
+              this.tutorialStep++;
+            } else {
+              this.dismissTutorial();
+            }
+          })
+      }
+      .width('80%')
+      .padding(24)
     }
     .width('100%')
     .height('100%')

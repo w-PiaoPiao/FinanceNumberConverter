@@ -5,9 +5,17 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.view.inputmethod.InputMethodManager
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -46,12 +55,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financenumberconverter.AmountInputValidator
@@ -84,6 +96,8 @@ fun ConverterScreen() {
     var copiedHistoryId by remember { mutableStateOf<String?>(null) }
     var showPrivacyDialog by remember { mutableStateOf(false) }
     var showPrivacyDetail by remember { mutableStateOf(false) }
+    var showTutorial by remember { mutableStateOf(false) }
+    var tutorialStep by remember { mutableStateOf(0) }
 
     // 计算属性
     val fractionDigits by remember(input) {
@@ -119,8 +133,11 @@ fun ConverterScreen() {
     LaunchedEffect(Unit) {
         val prefs = context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
         val accepted = prefs.getBoolean("privacy_policy_accepted", false)
+        val tutorialShown = prefs.getBoolean("has_shown_tutorial", false)
         if (!accepted) {
             showPrivacyDialog = true
+        } else if (!tutorialShown) {
+            showTutorial = true
         }
     }
 
@@ -143,6 +160,10 @@ fun ConverterScreen() {
         val converted = NumberConverter.convert(amount)
         result = converted
         errorMessage = null
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        (context as? Activity)?.currentFocus?.windowToken?.let {
+            imm.hideSoftInputFromWindow(it, 0)
+        }
         // 写入历史
         val item = HistoryItem(input = trimmed, output = converted)
         history = HistoryStore.add(item, history)
@@ -176,6 +197,9 @@ fun ConverterScreen() {
         val prefs = context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("privacy_policy_accepted", true).apply()
         showPrivacyDialog = false
+        if (!prefs.getBoolean("has_shown_tutorial", false)) {
+            showTutorial = true
+        }
     }
 
     fun exitApp() {
@@ -225,14 +249,19 @@ fun ConverterScreen() {
         )
 
         // 4. 结果 + 复制
-        if (result.isNotEmpty()) {
+        AnimatedVisibility(
+            visible = result.isNotEmpty(),
+            enter = fadeIn() + slideInVertically { it / 2 },
+            exit = fadeOut() + slideOutVertically { it / 2 }
+        ) {
             ResultSection(
                 result = result,
                 isCopied = isCopied,
                 onCopy = ::copyResult,
                 onShare = ::shareResult
             )
-        } else {
+        }
+        if (result.isEmpty()) {
             EmptyResultHint()
         }
 
@@ -417,6 +446,68 @@ fun ConverterScreen() {
             }
         )
     }
+
+    if (showTutorial) {
+        val tutorialSteps = listOf(
+            "在输入框中输入金额数字，\n例如 1234.56",
+            "点击「转换为大写」按钮\n查看转换结果",
+            "结果可一键复制，\n也可分享给其他应用"
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.45f))
+                .clickable {
+                    if (tutorialStep < 2) {
+                        tutorialStep++
+                    } else {
+                        showTutorial = false
+                        context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
+                            .edit().putBoolean("has_shown_tutorial", true).apply()
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(32.dp)
+            ) {
+                Text(
+                    text = "步骤 ${tutorialStep + 1}/3",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = tutorialSteps[tutorialStep],
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.9f),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp
+                )
+                Spacer(Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        if (tutorialStep < 2) {
+                            tutorialStep++
+                        } else {
+                            showTutorial = false
+                            context.getSharedPreferences("fnc_prefs", Context.MODE_PRIVATE)
+                                .edit().putBoolean("has_shown_tutorial", true).apply()
+                        }
+                    },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = if (tutorialStep == 2) "开始使用" else "下一步",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+    }
 }
 
 // ===== 子组件 =====
@@ -536,13 +627,21 @@ private fun PrimaryButton(
     enabled: Boolean,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
     Button(
         onClick = onClick,
         enabled = enabled,
+        interactionSource = interactionSource,
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(50.dp)
+            .graphicsLayer {
+                scaleX = if (isPressed) 0.97f else 1f
+                scaleY = if (isPressed) 0.97f else 1f
+            },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.onSurface,
             contentColor = MaterialTheme.colorScheme.surface,
@@ -575,27 +674,33 @@ private fun ResultSection(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
+    val copyInteractionSource = remember { MutableInteractionSource() }
+    val isCopyPressed by copyInteractionSource.collectIsPressedAsState()
+    val shareInteractionSource = remember { MutableInteractionSource() }
+    val isSharePressed by shareInteractionSource.collectIsPressedAsState()
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // 结果文字
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
-                .clip(RoundedCornerShape(10.dp))
-                .padding(horizontal = 16.dp, vertical = 20.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = result,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                lineHeight = 32.sp
-            )
-        }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .padding(horizontal = 16.dp, vertical = 20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                SelectionContainer {
+                    Text(
+                        text = result,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 32.sp
+                    )
+                }
+            }
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             // 复制按钮
@@ -605,7 +710,15 @@ private fun ResultSection(
                     .height(44.dp)
                     .border(1.dp, borderColor, RoundedCornerShape(10.dp))
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable(onClick = onCopy),
+                    .graphicsLayer {
+                        scaleX = if (isCopyPressed) 0.97f else 1f
+                        scaleY = if (isCopyPressed) 0.97f else 1f
+                    }
+                    .clickable(
+                        interactionSource = copyInteractionSource,
+                        indication = null,
+                        onClick = onCopy
+                    ),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -630,7 +743,15 @@ private fun ResultSection(
                     .size(44.dp)
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable(onClick = onShare),
+                    .graphicsLayer {
+                        scaleX = if (isSharePressed) 0.97f else 1f
+                        scaleY = if (isSharePressed) 0.97f else 1f
+                    }
+                    .clickable(
+                        interactionSource = shareInteractionSource,
+                        indication = null,
+                        onClick = onShare
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

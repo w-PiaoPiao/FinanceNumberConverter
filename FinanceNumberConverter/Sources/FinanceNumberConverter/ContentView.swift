@@ -20,7 +20,9 @@ struct ContentView: View {
     @State private var isShowingClearConfirm: Bool = false
     @State private var isShowingHistoryClearConfirm: Bool = false
     @State private var history: [HistoryItem] = []
-    @State private var copiedHistoryId: UUID? = nil  // 哪个历史项刚被复制
+    @State private var copiedHistoryId: UUID? = nil
+    @State private var showTutorial: Bool = false
+    @State private var tutorialStep: Int = 0
 
     @FocusState private var isInputFocused: Bool
 
@@ -61,9 +63,26 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // 短暂延迟确保视图已上屏
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 isInputFocused = true
+            }
+            if !UserDefaults.standard.bool(forKey: "has_shown_tutorial") {
+                showTutorial = true
+            }
+        }
+        .overlay {
+            if showTutorial {
+                TutorialOverlay(
+                    step: tutorialStep,
+                    onNext: {
+                        if tutorialStep < 2 {
+                            tutorialStep += 1
+                        } else {
+                            showTutorial = false
+                            UserDefaults.standard.set(true, forKey: "has_shown_tutorial")
+                        }
+                    }
+                )
             }
         }
         .alert("清除全部内容？", isPresented: $isShowingClearConfirm) {
@@ -179,6 +198,7 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .disabled(input.isEmpty)
+        .buttonStyle(PressScaleButtonStyle())
     }
 
     /// 次要操作按钮：试试看 / 清除（移到结果区下方）
@@ -198,8 +218,10 @@ struct ContentView: View {
     private var resultSectionOrHint: some View {
         if !result.isEmpty {
             resultSection
+                .transition(.opacity.combined(with: .move(edge: .bottom)).animation(.easeOut(duration: 0.25)))
         } else {
             emptyHint
+                .transition(.opacity.animation(.easeOut(duration: 0.2)))
         }
     }
 
@@ -212,6 +234,7 @@ struct ContentView: View {
                 .foregroundStyle(Color(.label))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
+                .textSelection(.enabled)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
                 .padding(.horizontal, 16)
@@ -244,6 +267,7 @@ struct ContentView: View {
                             )
                     )
                 }
+                .buttonStyle(PressScaleButtonStyle())
 
                 // 分享按钮
                 Button(action: performShare) {
@@ -257,6 +281,7 @@ struct ContentView: View {
                                 .strokeBorder(Color(.separator), lineWidth: 1)
                         )
                 }
+                .buttonStyle(PressScaleButtonStyle())
             }
         }
     }
@@ -331,7 +356,9 @@ struct ContentView: View {
             return
         }
         let converted = NumberConverter.convert(amount)
-        result = converted
+        withAnimation(.easeOut(duration: 0.25)) {
+            result = converted
+        }
         errorMessage = nil
         isInputFocused = false  // 转换后收起键盘
 
@@ -470,6 +497,62 @@ private struct SecondaryButton: View {
                 )
         }
         .disabled(disabled)
+        .buttonStyle(PressScaleButtonStyle())
+    }
+}
+
+// MARK: - 首次使用引导
+
+private struct TutorialOverlay: View {
+    let step: Int
+    let onNext: () -> Void
+
+    private let steps: [(title: String, detail: String)] = [
+        ("步骤 1/3", "在输入框中输入金额数字，\n例如 1234.56"),
+        ("步骤 2/3", "点击「转换为大写」按钮\n查看转换结果"),
+        ("步骤 3/3", "结果可一键复制，\n也可分享给其他应用"),
+    ]
+
+    var body: some View {
+        Color.black.opacity(0.45)
+            .ignoresSafeArea()
+            .overlay(
+                VStack(spacing: 20) {
+                    Text(steps[step].title)
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(steps[step].detail)
+                        .font(.system(size: 16))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(6)
+
+                    Button(action: onNext) {
+                        Text(step == 2 ? "开始使用" : "下一步")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(PressScaleButtonStyle())
+                    .padding(.horizontal, 40)
+                    .padding(.top, 12)
+                }
+                .padding(32)
+            )
+    }
+}
+
+// MARK: - 按钮按下缩放
+
+private struct PressScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 

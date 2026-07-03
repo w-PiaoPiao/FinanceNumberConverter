@@ -52,11 +52,11 @@ DEVICES = {
         "aspect": 9 / 16,
         "out_dir": AGC_READY_DIR,
         "files": [
-            ("01-empty-state.png",  +200),
-            ("02-typing.png",       +150),
-            ("03-result.png",          0),
-            ("04-history.png",       +50),
-            ("05-clear-dialog.png",  +50),
+            ("Screenshot_2026-07-03T201939.png", 0),
+            ("Screenshot_2026-07-03T201957.png", 0),
+            ("Screenshot_2026-07-03T202021.png", 0),
+            ("Screenshot_2026-07-03T202033.png", 0),
+            ("Screenshot_2026-07-03T202040.png", 0),
         ],
     },
     "pc": {
@@ -66,11 +66,11 @@ DEVICES = {
         "aspect": 16 / 9,
         "out_dir": AGC_READY_DIR / "PC",
         "files": [
-            ("Screenshot_2026-06-25T223418.png", 0),  # empty
-            ("Screenshot_2026-06-25T223430.png", 0),  # typing
-            ("Screenshot_2026-06-25T223434.png", 0),  # result
-            ("Screenshot_2026-06-25T223456.png", 0),  # history
-            ("Screenshot_2026-06-25T223503.png", 0),  # dialog
+            ("Screenshot_2026-07-03T202355.png", 0),
+            ("Screenshot_2026-07-03T202401.png", 0),
+            ("Screenshot_2026-07-03T202407.png", 0),
+            ("Screenshot_2026-07-03T202417.png", 0),
+            ("Screenshot_2026-07-03T202423.png", 0),
         ],
     },
 }
